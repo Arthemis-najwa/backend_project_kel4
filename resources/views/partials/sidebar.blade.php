@@ -30,12 +30,7 @@
             class="{{ request()->is('arsip-data-pelamar') ? 'bg-gray-50 text-orange-400' : 'text-white' }} ms-5 ps-8 p-5 rounded-tl-full rounded-bl-full flex gap-3 items-center mb-5">
             <div class="w-[20px]"></div>
             <span class="poppins-medium">Arsip Data Pelamar</span>
-        </a>
-         <a href="{{ route('change-password') }}"
-            class="{{ request()->is('change-password') ? 'bg-gray-50 text-orange-400' : 'text-white' }} ms-5 ps-8 p-5 rounded-tl-full rounded-bl-full flex gap-3 items-center mb-5">
-            <div class="w-[20px]"></div>
-            <span class="poppins-medium">Ganti Password</span>
-        </a>
+       
         <a href="{{ route('logout') }}"
             class="ms-5 ps-8 p-5 rounded-tl-full rounded-bl-full flex gap-3 items-center mb-5">
             <div class="w-[20px]"></div>

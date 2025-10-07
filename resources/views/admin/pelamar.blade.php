@@ -26,12 +26,12 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-semibold text-gray-800">Daftar Pelamar</h2>
             <button class="px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                    <i class="fa fa-plus"></i>                 Tambah Pelamar
+                <i class="fa fa-plus"></i> Tambah Pelamar
             </button>
         </div>
 
         <div class="relative overflow-x-auto rounded-xl">
-            <table class="w-full text-sm text-left text-gray-700 border border-gray-200">
+            <table id="applicantsTable" class="w-full text-sm text-left text-gray-700 border border-gray-200">
                 <thead class="bg-green-500 text-white uppercase text-xs">
                     <tr>
                         <th scope="col" class="px-6 py-3 border-gray-200">No</th>
@@ -55,89 +55,20 @@
                         <td class="px-6 py-4">Teknik Informatika</td>
                         <td class="px-6 py-4">PT ABC Technology</td>
                         <td class="px-6 py-4">
-                            <span
-                                class="bg-yellow-400 text-white px-4 py-1 rounded-full text-xs font-semibold shadow-md">Waiting
-                                List</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <a href="#" class="text-blue-600 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-
-                    <tr class="bg-white border-b border-gray-200">
-                        <td class="px-6 py-4">2</td>
-                        <td class="px-6 py-4 font-medium text-gray-900">Jane Smith</td>
-                        <td class="px-6 py-4">28</td>
-                        <td class="px-6 py-4">Perempuan</td>
-                        <td class="px-6 py-4">S1</td>
-                        <td class="px-6 py-4">Desain Komunikasi Visual</td>
-                        <td class="px-6 py-4">PT XYZ Creative</td>
-                        <td class="px-6 py-4">
-                            <span
-                                class="bg-purple-500 text-white px-4 py-1 rounded-full text-xs font-semibold shadow-md">Interview</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <a href="#" class="text-blue-600 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-
-                    <tr class="bg-white border-b border-gray-200">
-                        <td class="px-6 py-4">3</td>
-                        <td class="px-6 py-4 font-medium text-gray-900">Mike Johnson</td>
-                        <td class="px-6 py-4">30</td>
-                        <td class="px-6 py-4">Laki-laki</td>
-                        <td class="px-6 py-4">S2</td>
-                        <td class="px-6 py-4">Teknik Informatika</td>
-                        <td class="px-6 py-4">PT DEF Solutions</td>
-                        <td class="px-6 py-4">
-                            <span
-                                class="bg-green-500 text-white px-4 py-1 rounded-full text-xs font-semibold shadow-md">Diterima</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <a href="#" class="text-blue-600 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-
-                    <tr class="bg-white border-b border-gray-200">
-                        <td class="px-6 py-4">4</td>
-                        <td class="px-6 py-4 font-medium text-gray-900">Sarah Wilson</td>
-                        <td class="px-6 py-4">32</td>
-                        <td class="px-6 py-4">Perempuan</td>
-                        <td class="px-6 py-4">S2</td>
-                        <td class="px-6 py-4">Manajemen Bisnis</td>
-                        <td class="px-6 py-4">PT GHI Corp</td>
-                        <td class="px-6 py-4">
-                            <span
-                                class="bg-orange-400 text-white px-4 py-1 rounded-full text-xs font-semibold shadow-md">Pelatihan</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <a href="#" class="text-blue-600 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-
-                    <tr class="bg-white border-b border-gray-200">
-                        <td class="px-6 py-4">5</td>
-                        <td class="px-6 py-4 font-medium text-gray-900">Alex Brown</td>
-                        <td class="px-6 py-4">27</td>
-                        <td class="px-6 py-4">Laki-laki</td>
-                        <td class="px-6 py-4">S1</td>
-                        <td class="px-6 py-4">Sistem Informasi</td>
-                        <td class="px-6 py-4">PT JKL Systems</td>
-                        <td class="px-6 py-4">
-                            <span
-                                class="bg-blue-500 text-white px-4 py-1 rounded-full text-xs font-semibold shadow-md">Medical
-                                Check Up</span>
+                            <span class="bg-yellow-400 text-white px-4 py-1 rounded-full text-xs font-semibold shadow-md">
+                                Waiting List
+                            </span>
                         </td>
                         <td class="px-6 py-4">
                             <a href="#" class="text-blue-600 hover:underline">Edit</a>
                         </td>
                     </tr>
                 </tbody>
-
             </table>
         </div>
     </div>
 @endsection
+
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 
 @push('scripts')
