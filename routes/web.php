@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 // Route::get('/', function () {
 //     return view('login');
@@ -35,3 +36,19 @@ Route::get("/logout", [AuthController::class, "logout"])->name("logout");
 Route::get('/forgot-password', function () {
     return 'Halaman ganti password belum tersedia.';
 })->name('password.request');
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.email');
+
+Route::get('/verify-otp', [ForgotPasswordController::class, 'showOtpForm'])->name('password.otp.form');
+
+Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset.form');
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.update');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('password.store');
+Route::post('/password/store', [AuthController::class, 'store'])->name('password.store');
+
+Route::post('/password/verify-otp', [AuthController::class, 'verifyOtp'])->name('password.verify.otp');
+
+Route::get('/password/reset-form', [AuthController::class, 'showResetForm'])->name('password.reset.form');
+Route::post('/password/reset-store', [AuthController::class, 'resetPassword'])->name('password.reset.store');
+

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -46,4 +48,94 @@ class AuthController extends Controller
         Auth::logout();
         return redirect()->route('login');
     }
+    public function verifyOtp(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'otp' => 'required',
+    ]);
+
+    $token = \DB::table('password_reset_tokens')
+        ->where('email', $request->email)
+        ->where('otp_code', $request->otp)
+        ->where('otp_expires_at', '>', now())
+        ->first();
+
+    if (!$token) {
+        return back()->withErrors(['otp' => 'Kode OTP salah atau sudah kadaluarsa.']);
+    }
+
+    // Jika OTP benar, arahkan ke halaman reset password
+    return redirect()->route('password.reset.form', ['email' => $request->email]);
+}
+
+
+    public function store(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'otp' => 'required',
+        'password' => 'required|min:6|confirmed',
+    ]);
+
+    // Cari data user di tabel admin
+    $admin = Admin::where('email', $request->email)->first();
+
+    if (!$admin) {
+        return back()->withErrors(['email' => 'Email tidak ditemukan.']);
+    }
+
+    // Cek OTP yang tersimpan di tabel password_reset_tokens
+    $token = \DB::table('password_reset_tokens')
+        ->where('email', $request->email)
+        ->where('otp_code', $request->otp)
+        ->where('otp_expires_at', '>', now())
+        ->first();
+
+    if (!$token) {
+        return back()->withErrors(['otp' => 'OTP salah atau sudah kadaluarsa.']);
+    }
+
+    // Update password admin
+    $admin->update([
+        'password' => Hash::make($request->password),
+    ]);
+
+    // Hapus token OTP agar tidak bisa dipakai lagi
+    \DB::table('password_reset_tokens')
+        ->where('email', $request->email)
+        ->delete();
+
+    return redirect()->route('login')->with('success', 'Password berhasil diperbarui! Silakan login kembali.');
+}
+
+public function showResetForm(Request $request)
+{
+    $email = $request->query('email');
+    return view('auth.reset-password', compact('email'));
+}
+
+public function resetPassword(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|min:6|confirmed',
+    ]);
+
+    // Ambil user dari tabel Admin
+    $admin = Admin::where('email', $request->email)->first();
+
+    if (!$admin) {
+        return back()->withErrors(['email' => 'Email tidak ditemukan.']);
+    }
+
+    // Update password
+    $admin->password = Hash::make($request->password);
+    $admin->save();
+
+    // Hapus token OTP agar tidak bisa digunakan ulang
+    DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+    return redirect()->route('login')->with('success', 'Password berhasil diubah. Silakan login.');
+}
 }
