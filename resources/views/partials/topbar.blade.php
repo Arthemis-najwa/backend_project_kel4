@@ -14,17 +14,39 @@
                 placeholder="Cari disini..." required />
         </div>
     </div>
-    <div class="flex-[1] flex justify-end">
-        <div class="relative">
-            <button id="dropdownButton" data-dropdown-toggle="dropdown"
-                class="size-12 bg-gray-300 rounded-full cursor-pointer" type="button"></button>
-            <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
-                <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownButton">
-                    <li>
-                        <a href="/change-password" class="block px-4 py-2 hover:bg-gray-100">Change Password</a>
-                    </li>
-                </ul>
-            </div>
+
+    <!-- Profil dropdown -->
+    <div class="flex-[1] flex justify-end relative">
+        <button id="profileButton" class="size-12 bg-gray-300 rounded-full flex items-center justify-center focus:outline-none">
+            <i class="fa-regular fa-user text-gray-600"></i>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="dropdownMenu"
+            class="hidden absolute top-[70px] right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-md py-2 z-20">
+            <a href="{{ route('password.request') }}"
+                class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 text-sm">
+                <i class="fa-regular fa-key mr-2"></i> Ganti Password
+            </a>
+>>>>>>> Stashed changes
         </div>
     </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const profileButton = document.getElementById('profileButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    profileButton.addEventListener('click', () => {
+        dropdownMenu.classList.toggle('hidden');
+    });
+
+    // Tutup dropdown jika klik di luar area
+    document.addEventListener('click', (e) => {
+        if (!profileButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+});
+</script>
+
 </nav>

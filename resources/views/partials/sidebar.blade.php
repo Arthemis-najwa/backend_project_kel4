@@ -30,11 +30,40 @@
             class="{{ request()->is('arsip-data-pelamar') ? 'bg-gray-50 text-orange-400' : 'text-white' }} ms-5 ps-8 p-5 rounded-tl-full rounded-bl-full flex gap-3 items-center mb-5">
             <div class="w-[20px]"></div>
             <span class="poppins-medium">Arsip Data Pelamar</span>
-       
-        <a href="{{ route('logout') }}"
-            class="ms-5 ps-8 p-5 rounded-tl-full rounded-bl-full flex gap-3 items-center mb-5">
-            <div class="w-[20px]"></div>
-            <span class="poppins-medium text-white">Keluar</span>
         </a>
+        <a href="#" 
+    class="ms-5 ps-8 p-5 rounded-tl-full rounded-bl-full flex gap-3 items-center mb-5 text-white poppins-medium"
+    id="logoutButton">
+    <div class="w-[20px]"></div>
+    <span>Keluar</span>
+</a>
+
+<form id="logoutForm" action="{{ route('logout') }}" method="GET" class="d-none"></form>
+
+>>>>>>> Stashed changes
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.getElementById('logoutButton').addEventListener('click', function (e) {
+    e.preventDefault();
+
+    Swal.fire({
+        title: 'Keluar dari akun?',
+        text: "Apakah kamu yakin ingin logout sekarang?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, keluar',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('logoutForm').submit();
+        }
+    });
+});
+</script>
+</body>
+</html>
+
 </aside>

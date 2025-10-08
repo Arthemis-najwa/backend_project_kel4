@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 // })->name('register');
 
 // aktifkan route auth
-// require __DIR__ . '/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::get("/", [PageController::class, "direct_dashboard"]);
 Route::get("/dashboard", [PageController::class, "dashboard"])->name("dashboard");
@@ -32,3 +32,6 @@ Route::post("/login", [AuthController::class, "login_post"])->name("login.post")
 
 
 Route::get("/logout", [AuthController::class, "logout"])->name("logout");
+Route::get('/forgot-password', function () {
+    return 'Halaman ganti password belum tersedia.';
+})->name('password.request');
