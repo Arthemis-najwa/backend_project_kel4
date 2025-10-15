@@ -4,16 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\CompanyController;
 
-// Route::get('/', function () {
-//     return view('login');
-// });
-
-// Route::get('/register', function () {
-//     return view('auth.register');
-// })->name('register');
-
-// aktifkan route auth
 require __DIR__ . '/auth.php';
 
 Route::get("/", [PageController::class, "direct_dashboard"]);
@@ -52,3 +44,8 @@ Route::post('/password/verify-otp', [AuthController::class, 'verifyOtp'])->name(
 Route::get('/password/reset-form', [AuthController::class, 'showResetForm'])->name('password.reset.form');
 Route::post('/password/reset-store', [AuthController::class, 'resetPassword'])->name('password.reset.store');
 
+Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+Route::post('/companies/store', [CompanyController::class, 'store'])->name('companies.store');
+Route::delete('/companies/{id}', [CompanyController::class, 'destroy'])->name('companies.destroy');
+Route::resource('companies', CompanyController::class);
+Route::get('/companies/export/{id}', [CompanyController::class, 'export'])->name('companies.export');

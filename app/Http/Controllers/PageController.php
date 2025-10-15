@@ -32,17 +32,19 @@ class PageController extends Controller
         ]);
     }
 
-    public function perusahaan()
-    {
-        return view('admin.perusahaan', [
-            "title" => "Perusahaan",
-        ]);
-    }
 
     public function arsip_data_pelamar()
     {
         return view('admin.arsip-data-pelamar', [
             "title" => "Arsip Data Pelamar",
         ]);
+    }
+
+    public function perusahaan()
+    {
+        $companies = \App\Models\Company::all();
+        $title = 'Perusahaan'; 
+
+        return view('admin.perusahaan', compact('companies', 'title'));
     }
 }
