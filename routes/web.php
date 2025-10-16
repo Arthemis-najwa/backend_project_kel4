@@ -5,7 +5,7 @@ use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\CompanyController;
-
+use App\Http\Controllers\VacancyController;
 require __DIR__ . '/auth.php';
 
 Route::get("/", [PageController::class, "direct_dashboard"]);
@@ -49,3 +49,9 @@ Route::post('/companies/store', [CompanyController::class, 'store'])->name('comp
 Route::delete('/companies/{id}', [CompanyController::class, 'destroy'])->name('companies.destroy');
 Route::resource('companies', CompanyController::class);
 Route::get('/companies/export/{id}', [CompanyController::class, 'export'])->name('companies.export');
+
+Route::get('/vacancies', [VacancyController::class, 'index'])->name('vacancies.index');
+Route::post('/vacancies', [VacancyController::class, 'store'])->name('vacancies.store');
+Route::get('/vacancies/{id}/edit', [VacancyController::class, 'edit'])->name('vacancies.edit');
+Route::put('/vacancies/{id}', [VacancyController::class, 'update'])->name('vacancies.update');
+Route::delete('/vacancies/{id}', [VacancyController::class, 'destroy'])->name('vacancies.destroy');

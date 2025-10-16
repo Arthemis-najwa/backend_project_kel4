@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Vacancy;
+use App\Models\Company;
+use App\Models\Qualification;
 
 class PageController extends Controller
 {
@@ -27,8 +30,18 @@ class PageController extends Controller
 
     public function lowongan_pekerjaan()
     {
+        // Get companies and qualifications
+        $companies = Company::all();
+        $qualifications = Qualification::all();
+        
+        // Get vacancies with their relationships
+        $vacancies = Vacancy::with(['company', 'qualification'])->get();
+        
         return view('admin.lowongan-pekerjaan', [
             "title" => "Lowongan Pekerjaan",
+            "vacancies" => $vacancies,
+            "companies" => $companies,
+            "qualifications" => $qualifications
         ]);
     }
 
