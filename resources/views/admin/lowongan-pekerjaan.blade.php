@@ -1,209 +1,240 @@
 @extends('layouts.admin')
 
 @section('content')
-    <h1 class="text-xl">Lowongan Pekerjaan</h1>
+<h1 class="text-2xl font-semibold text-gray-800 mb-6">Pendataan lowongan pekerjaan</h1>
 
-    <div class="bg-white rounded-xl shadow-md p-6 mt-10">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold text-gray-800">Daftar Lowongan Pekerjaan</h2>
-            <button data-modal-target="tambahLowonganModal" data-modal-toggle="tambahLowonganModal"
-                class="px-4 py-3 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition">
-                <i class="fa fa-plus"></i> Tambah Lowongan
-            </button>
-        </div>
+<!-- Tabel Pelamar -->
+<div class="bg-white rounded-2xl shadow-md p-6 mt-4 border border-gray-200">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-800">Daftar Pelamar</h2>
+        <button id="openTambahBtn"
+            class="px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition flex items-center text-sm">
+            <i class="fa fa-plus mr-1"></i> Tambah Pelamar
+        </button>
+    </div>
 
-        <div class="relative overflow-x-auto rounded-xl">
-        <table id="companyTable" class="w-full text-sm text-left text-gray-700 border border-gray-200">
-            <thead class="bg-green-500 text-white uppercase text-xs">
+    <div class="relative overflow-x-auto rounded-2xl">
+        <table id="applicantsTable" class="w-full text-sm text-left text-gray-700 border border-gray-200">
+            <thead class="bg-green-500 text-white uppercase">
                 <tr>
-                    <th class="px-6 py-3 border-gray-200">No</th>
-                    <th class="px-6 py-3 border-gray-200">Nama Perusahaan</th>
-                    <th class="px-6 py-3 border-gray-200">Posisi</th>
-                    <th class="px-6 py-3 border-gray-200">Usia</th>
-                    <th class="px-6 py-3 border-gray-200">Jenis Kelamin</th>
-                    <th class="px-6 py-3 border-gray-200">Pendidikan Terakhir</th>
-                    <th class="px-6 py-3 border-gray-200">Jurusan</th>
-                    <th class="px-6 py-3 border-gray-200">Pengalaman</th>
-                    <th class="px-6 py-3 border-gray-200">Skill Teknis</th>
-                    <th class="px-6 py-3 border-gray-200">Skill Non-Teknis</th>
-                    <th class="px-6 py-3 border-gray-200">Status Vaksinasi</th>
-                    <th class="px-6 py-3 border-gray-200">Status Pernikahan</th>
-                    <th class="px-6 py-3 border-gray-200">Tahun Lulus</th>
-                    <th class="px-6 py-3 border-gray-200">Aksi</th>
+                    <th class="px-4 py-2 border-gray-200">No</th>
+                    <th class="px-4 py-2 border-gray-200">Nama</th>
+                    <th class="px-4 py-2 border-gray-200">Perusahaan</th>
+                    <th class="px-4 py-2 border-gray-200">Posisi</th>
+                    <th class="px-4 py-2 border-gray-200">Usia</th>
+                    <th class="px-4 py-2 border-gray-200">Jenis Kelamin</th>
+                    <th class="px-4 py-2 border-gray-200">Pendidikan</th>
+                    <th class="px-4 py-2 border-gray-200">Jurusan</th>
+                    <th class="px-4 py-2 border-gray-200">Tahun Lulus</th>
+                    <th class="px-4 py-2 border-gray-200">Pengalaman</th>
+                    <th class="px-4 py-2 border-gray-200">Skill Teknis</th>
+                    <th class="px-4 py-2 border-gray-200">Skill Non Teknis</th>
+                    <th class="px-4 py-2 border-gray-200">Vaksin</th>
+                    <th class="px-4 py-2 border-gray-200">Pernikahan</th>
+                    <th class="px-4 py-2 border-gray-200">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
-                @forelse ($vacancies as $index => $vacancy)
-                <tr class="bg-white border-b border-gray-200">
-                    <td class="px-6 py-4">{{ $index + 1 }}</td>
-                    <td class="px-6 py-4 font-medium text-gray-900">
-                        {{ $vacancy->company->nama_perusahaan ?? '-' }}
-                    </td>
-                    <td class="px-6 py-4">{{ $vacancy->posisi }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->usia ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->jenis_kelamin ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->pendidikan_terakhir ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->jurusan ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->pengalaman ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->skill_teknis ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->skill_non_teknis ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->status_vaksinasi ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->status_pernikahan ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->tahun_lulus ?? '-' }}</td>
-                    <td class="px-6 py-4 flex gap-2">
-                        <!-- Tombol Edit -->
-                        <button class="edit-btn text-blue-600 hover:text-blue-800"
-                            data-id="{{ $vacancy->id }}"
-                            data-posisi="{{ $vacancy->posisi }}"
-                            data-company="{{ $vacancy->company_id }}"
-                            data-qualification="{{ $vacancy->qualification_id }}">
-                            Edit
-                        </button>
 
-                        <!-- Tombol Hapus -->
-                        <form action="{{ route('vacancies.destroy', $vacancy->id) }}" method="POST"
-                            onsubmit="return confirm('Hapus data ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800">Hapus</button>
-                        </form>
+            <tbody>
+               <tr class="border-b border-gray-200 bg-white hover:bg-green-50 transition">
+                    <td class="px-4 py-2">1</td>
+                    <td class="px-4 py-2 font-medium text-gray-900">John Doe</td>
+                    <td class="px-4 py-2">PT ABC Technology</td>
+                    <td class="px-4 py-2">Frontend Developer</td>
+                    <td class="px-4 py-2">25</td>
+                    <td class="px-4 py-2">Laki-laki</td>
+                    <td class="px-4 py-2">S1</td>
+                    <td class="px-4 py-2">Teknik Informatika</td>
+                    <td class="px-4 py-2">2022</td>
+                    <td class="px-4 py-2">1 tahun</td>
+                    <td class="px-4 py-2">ReactJS, MySQL, Git</td>
+                    <td class="px-4 py-2">Komunikatif, Leadership</td>
+                    <td class="px-4 py-2">
+                        <select class="status-vaksinasi text-white text-xs px-2 py-0.5 rounded-full">
+                            <option value="Lengkap">Lengkap</option>
+                            <option value="Belum Lengkap">Belum Lengkap</option>
+                            <option value="Belum Vaksin">Belum Vaksin</option>
+                        </select>
+                    </td>
+                    <td class="px-4 py-2">
+                        <select class="status-pernikahan text-white text-xs px-2 py-0.5 rounded-full">
+                            <option value="Sudah menikah">Sudah menikah</option>
+                            <option value="Belum menikah">Belum menikah</option>
+                        </select>
+                    </td>
+                    <td class="px-4 py-2 flex space-x-3 text-lg">
+                        <button class="text-blue-600 hover:scale-110 transition" title="Edit"
+                            onclick="openEditModal(this)">
+                            <i class="fa fa-pen"></i>
+                        </button>
+                        <button class="text-red-500 hover:scale-110 transition" title="Hapus" onclick="openDeleteModal()">
+                            <i class="fa fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
-                @empty
-                <tr>
-                    <td colspan="14" class="text-center py-4">Belum ada data lowongan.</td>
-                </tr>
-                @endforelse
             </tbody>
         </table>
     </div>
 </div>
 
+@php
+    $modalClasses = "bg-white w-full max-w-md p-6 rounded-2xl shadow-lg relative overflow-y-auto max-h-[80vh]";
+    $inputClasses = "w-full border rounded px-2 py-1 text-sm";
+@endphp
 
-
-   {{-- Modal Tambah --}}
-<div id="tambahLowonganModal"
-    class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl">
-        <form id="addForm" method="POST" action="{{ route('vacancies.store') }}">
-            @csrf
-            <div class="p-6 border-b">
-                <h3 class="text-lg font-semibold">Tambah Lowongan</h3>
+<!-- MODAL TAMBAH -->
+<div id="tambahModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+    <div class="{{ $modalClasses }}">
+        <h2 class="text-base font-semibold mb-2 text-gray-800">Tambah Pelamar</h2>
+        <form id="tambahForm">
+            <div class="grid grid-cols-2 gap-2">
+                @foreach(['Nama','Perusahaan','Posisi','Usia','Jenis Kelamin','Pendidikan','Jurusan','Tahun Lulus','Pengalaman Kerja','Skill Teknis','Skill Non Teknis','Vaksin','Pernikahan'] as $field)
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700">{{ $field }}</label>
+                        @if($field=='Jenis Kelamin' || $field=='Pernikahan' || $field=='Vaksin')
+                            <select class="{{ $inputClasses }}">
+                                @if($field=='Jenis Kelamin')
+                                    <option>Laki-laki</option>
+                                    <option>Perempuan</option>
+                                @elseif($field=='Vaksin')
+                                    <option>Lengkap</option>
+                                    <option>Belum Lengkap</option>
+                                    <option>Belum Vaksin</option>
+                                @else
+                                    <option>Sudah menikah</option>
+                                    <option>Belum menikah</option>
+                                @endif
+                            </select>
+                        @elseif(str_contains($field,'Skill'))
+                            <textarea class="{{ $inputClasses }}" rows="2"></textarea>
+                        @elseif($field=='Usia' || $field=='Tahun Lulus')
+                            <input type="number" class="{{ $inputClasses }}">
+                        @else
+                            <input type="text" class="{{ $inputClasses }}">
+                        @endif
+                    </div>
+                @endforeach
             </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label for="posisi" class="block text-sm font-medium text-gray-700">Posisi</label>
-                    <input type="text" name="posisi" id="posisi"
-                        class="w-full border-gray-300 rounded-lg shadow-sm" required>
-                </div>
-                <div>
-                    <label for="company_id" class="block text-sm font-medium text-gray-700">Perusahaan</label>
-                    <select name="company_id" id="company_id" class="w-full border-gray-300 rounded-lg" required>
-                        <option value="">-- Pilih Perusahaan --</option>
-                        @foreach ($companies as $company)
-                        <option value="{{ $company->id }}">{{ $company->nama_perusahaan }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label for="qualification_id" class="block text-sm font-medium text-gray-700">Kualifikasi</label>
-                    <select name="qualification_id" id="qualification_id" class="w-full border-gray-300 rounded-lg"
-                        required>
-                        <option value="">-- Pilih Kualifikasi --</option>
-                        @foreach ($qualifications as $q)
-                        <option value="{{ $q->id }}">{{ $q->pendidikan_terakhir }} - {{ $q->usia }} th</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="flex justify-end p-4 border-t">
-                <button type="button" id="closeTambah"
-                    class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 mr-2">Batal</button>
-                <button type="submit"
-                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Simpan</button>
+            <div class="mt-4 flex justify-end space-x-2">
+                <button type="button" id="closeTambahBtn" class="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 text-sm">Batal</button>
+                <button type="submit" class="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm">Simpan</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- Modal Edit --}}
-<div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl">
-        <form id="editForm" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="p-6 border-b">
-                <h3 class="text-lg font-semibold">Edit Lowongan</h3>
-            </div>
-            <div class="p-6 space-y-4">
+<!-- MODAL EDIT -->
+<div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+    <div class="{{ $modalClasses }}">
+        <h2 class="text-base font-semibold mb-2 text-gray-800">Edit Pelamar</h2>
+        <form id="editForm">
+            <div class="grid grid-cols-2 gap-2">
+                @foreach(['Nama','Perusahaan','Posisi','Usia','Jenis Kelamin','Pendidikan','Jurusan','Tahun Lulus','Pengalaman Kerja','Skill Teknis','Skill Non Teknis'] as $field)
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700">{{ $field }}</label>
+                        @if($field=='Jenis Kelamin')
+                            <select id="edit{{ str_replace(' ','',$field) }}" class="{{ $inputClasses }}">
+                                <option>Laki-laki</option>
+                                <option>Perempuan</option>
+                            </select>
+                        @elseif(str_contains($field,'Skill'))
+                            <textarea id="edit{{ str_replace(' ','',$field) }}" class="{{ $inputClasses }}" rows="2"></textarea>
+                        @elseif($field=='Usia' || $field=='Tahun Lulus')
+                            <input type="number" id="edit{{ str_replace(' ','',$field) }}" class="{{ $inputClasses }}">
+                        @else
+                            <input type="text" id="edit{{ str_replace(' ','',$field) }}" class="{{ $inputClasses }}">
+                        @endif
+                    </div>
+                @endforeach
+
                 <div>
-                    <label for="editPosisi" class="block text-sm font-medium text-gray-700">Posisi</label>
-                    <input type="text" name="posisi" id="editPosisi"
-                        class="w-full border-gray-300 rounded-lg shadow-sm" required>
-                </div>
-                <div>
-                    <label for="editCompany" class="block text-sm font-medium text-gray-700">Perusahaan</label>
-                    <select name="company_id" id="editCompany" class="w-full border-gray-300 rounded-lg" required>
-                        @foreach ($companies as $company)
-                        <option value="{{ $company->id }}">{{ $company->nama_perusahaan }}</option>
-                        @endforeach
+                    <label class="block text-xs font-medium text-gray-700">Vaksin</label>
+                    <select id="editVaksin" class="{{ $inputClasses }}">
+                        <option>Lengkap</option>
+                        <option>Belum Lengkap</option>
+                        <option>Belum Vaksin</option>
                     </select>
                 </div>
+
                 <div>
-                    <label for="editQualification" class="block text-sm font-medium text-gray-700">Kualifikasi</label>
-                    <select name="qualification_id" id="editQualification" class="w-full border-gray-300 rounded-lg"
-                        required>
-                        @foreach ($qualifications as $q)
-                        <option value="{{ $q->id }}">{{ $q->pendidikan_terakhir }} - {{ $q->usia }} th</option>
-                        @endforeach
+                    <label class="block text-xs font-medium text-gray-700">Pernikahan</label>
+                    <select id="editPernikahan" class="{{ $inputClasses }}">
+                        <option>Sudah menikah</option>
+                        <option>Belum menikah</option>
                     </select>
                 </div>
             </div>
-            <div class="flex justify-end p-4 border-t">
-                <button type="button" id="closeModal"
-                    class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 mr-2">Batal</button>
-                <button type="submit"
-                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Perbarui</button>
+            <div class="mt-4 flex justify-end space-x-2">
+                <button type="button" id="closeEditBtn" class="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 text-sm">Batal</button>
+                <button type="submit" class="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm">Simpan</button>
             </div>
         </form>
     </div>
 </div>
-@endsection
 
-@push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // ✅ DataTable
-    const table = document.querySelector('#companyTable');
-    if (!$.fn.DataTable.isDataTable(table)) {
-        new DataTable(table, {
-            paging: true,
-            ordering: true,
-            info: true,
-            autoWidth: false,
-            stripeClasses: [],
-        });
+    // Modal Tambah
+    const tambahModal = document.getElementById("tambahModal");
+    const openTambahBtn = document.getElementById("openTambahBtn");
+    const closeTambahBtn = document.getElementById("closeTambahBtn");
+    openTambahBtn.addEventListener("click", ()=> tambahModal.classList.remove("hidden"));
+    closeTambahBtn.addEventListener("click", ()=> tambahModal.classList.add("hidden"));
+
+    // Modal Edit
+    const editModal = document.getElementById("editModal");
+    const closeEditBtn = document.getElementById("closeEditBtn");
+
+    function openEditModal(btn){
+        const row = btn.closest("tr");
+        const cells = row.children;
+
+        document.getElementById("editNama").value = cells[1].innerText;
+        document.getElementById("editPerusahaan").value = cells[2].innerText;
+        document.getElementById("editPosisi").value = cells[3].innerText;
+        document.getElementById("editUsia").value = cells[4].innerText;
+        document.getElementById("editJenisKelamin").value = cells[5].innerText;
+        document.getElementById("editPendidikan").value = cells[6].innerText;
+        document.getElementById("editJurusan").value = cells[7].innerText;
+        document.getElementById("editTahunLulus").value = cells[8].innerText;
+        document.getElementById("editPengalamanKerja").value = cells[9].innerText;
+        document.getElementById("editSkillTeknis").value = cells[10].innerText;
+        document.getElementById("editSkillNonTeknis").value = cells[11].innerText;
+        document.getElementById("editVaksin").value = cells[12].children[0].value;
+        document.getElementById("editPernikahan").value = cells[13].children[0].value;
+
+        updateVaksinColor(document.getElementById("editVaksin"));
+        updatePernikahanColor(document.getElementById("editPernikahan"));
+
+        editModal.classList.remove("hidden");
     }
 
-    // ✅ Tambah Modal
-    const tambahModal = $('#tambahLowonganModal');
-    $('#btnTambah').on('click', () => tambahModal.removeClass('hidden'));
-    $('#closeTambah').on('click', () => tambahModal.addClass('hidden'));
+    closeEditBtn.addEventListener("click", ()=> editModal.classList.add("hidden"));
 
-    // ✅ Edit Modal
-    const editModal = $('#editModal');
-    const editForm = $('#editForm');
+    // Hapus dummy
+    function openDeleteModal(){ alert('Hapus dummy'); }
 
-    $('.edit-btn').on('click', function() {
-        const id = $(this).data('id');
-        $('#editPosisi').val($(this).data('posisi'));
-        $('#editCompany').val($(this).data('company'));
-        $('#editQualification').val($(this).data('qualification'));
-        editForm.attr('action', '/vacancies/' + id);
-        editModal.removeClass('hidden');
+    // Dropdown warna
+    function updateVaksinColor(sel){
+        switch(sel.value){
+            case 'Lengkap': sel.style.backgroundColor='#0EDA52'; sel.style.color='white'; break;
+            case 'Belum Lengkap': sel.style.backgroundColor='#FFC107'; sel.style.color='black'; break;
+            case 'Belum Vaksin': sel.style.backgroundColor='#EF4444'; sel.style.color='white'; break;
+        }
+    }
+    function updatePernikahanColor(sel){
+        switch(sel.value){
+            case 'Sudah menikah': sel.style.backgroundColor='#3B82F6'; sel.style.color='white'; break;
+            case 'Belum menikah': sel.style.backgroundColor='#52D8A7'; sel.style.color='black'; break;
+        }
+    }
+
+    document.querySelectorAll('.status-vaksinasi').forEach(s=>{
+        updateVaksinColor(s);
+        s.addEventListener('change', ()=> updateVaksinColor(s));
     });
-
-    $('#closeModal').on('click', () => editModal.addClass('hidden'));
-});
+    document.querySelectorAll('.status-pernikahan').forEach(s=>{
+        updatePernikahanColor(s);
+        s.addEventListener('change', ()=> updatePernikahanColor(s));
+    });
 </script>
-@endpush
+@endsection
