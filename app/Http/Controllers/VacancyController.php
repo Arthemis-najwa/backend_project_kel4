@@ -1,27 +1,47 @@
 <?php
 
-namespace App\Models;
+namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Vacancy;
+use App\Models\Company;
+use App\Models\Qualification;
+use Illuminate\Http\Request;
 
-class VacancyController extends Model
+class VacancyController extends Controller
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'company_id',
-        'qualification_id',
-        'posisi',
-    ];
-
-    public function company()
+    public function index()
     {
-        return $this->belongsTo(Company::class);
+        $vacancies = Vacancy::with(['company', 'qualification'])->get();
+        $companies = Company::all();
+
+        return view('admin.lowongan-pekerjaan', [
+            'title' => 'Lowongan Pekerjaan',
+            'vacancies' => $vacancies,
+            'companies' => $companies,
+        ]);
     }
 
-    public function qualification()
+    public function store(Request $request)
     {
-        return $this->belongsTo(Qualification::class);
+        $qualification = Qualification::create([
+            'usia' => $request->usia,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'pendidikan_terakhir' => $request->pendidikan_terakhir,
+            'jurusan' => $request->jurusan,
+            'tahun_lulus' => $request->tahun_lulus,
+            'pengalaman_kerja' => $request->pengalaman_kerja,
+            'skill_teknis' => $request->skill_teknis,
+            'skill_non_teknis' => $request->skill_non_teknis,
+            'status_vaksinasi' => $request->status_vaksinasi,
+            'status_pernikahan' => $request->status_pernikahan,
+        ]);
+
+        Vacancy::create([
+            'company_id' => $request->company_id,
+            'qualification_id' => $qualification->id,
+            'posisi' => $request->posisi,
+        ]);
+
+        return redirect()->back()->with('success', 'Lowongan berhasil ditambahkan!');
     }
 }
