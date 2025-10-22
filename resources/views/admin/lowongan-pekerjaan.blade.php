@@ -18,7 +18,6 @@
             <thead class="bg-green-500 text-white uppercase">
                 <tr>
                     <th class="px-4 py-2 border-gray-200">No</th>
-                    <th class="px-4 py-2 border-gray-200">Nama</th>
                     <th class="px-4 py-2 border-gray-200">Perusahaan</th>
                     <th class="px-4 py-2 border-gray-200">Posisi</th>
                     <th class="px-4 py-2 border-gray-200">Usia</th>
@@ -79,7 +78,7 @@
         <form action="{{ route('vacancies.store') }}" method="POST">
     @csrf
     <div class="grid grid-cols-2 gap-4">
-        <input type="text" name="nama_lowongan" placeholder="Nama Lowongan" class="border p-2 rounded" required>
+       
         <input type="text" name="posisi" placeholder="Posisi" class="border p-2 rounded" required>
 
         <!-- Dropdown perusahaan -->

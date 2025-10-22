@@ -32,6 +32,10 @@
         @enderror
     </div>
 
+    <div class="text-right mb-5">
+        <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:underline">Lupa Kata Sandi?</a>
+    </div>
+
     <div>
         <button class="p-3 w-full bg-green-400 hover:bg-green-500 text-white rounded-full">Masuk</button>
     </div>
