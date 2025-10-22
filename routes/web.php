@@ -45,8 +45,8 @@ Route::resource('companies', CompanyController::class);
 Route::get('/companies/export/{id}', [CompanyController::class, 'export'])->name('companies.export');
 
 // Vacancy CRUD
-Route::get('/vacancies', [VacancyController::class, 'index'])->name('vacancies.index');
-Route::post('/vacancies', [VacancyController::class, 'store'])->name('vacancies.store');
+Route::get('/vacancies', [VacancyController::class, 'index'])->name('lowongan-pekerjaan');
+Route::post('/vacancies/store', [VacancyController::class, 'store'])->name('vacancies.store');
 Route::get('/vacancies/{id}/edit', [VacancyController::class, 'edit'])->name('vacancies.edit');
 Route::put('/vacancies/{id}', [VacancyController::class, 'update'])->name('vacancies.update');
 Route::delete('/vacancies/{id}', [VacancyController::class, 'destroy'])->name('vacancies.destroy');

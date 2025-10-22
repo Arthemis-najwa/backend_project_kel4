@@ -1,20 +1,20 @@
 @extends('layouts.admin')
 
 @section('content')
-<h1 class="text-2xl font-semibold text-gray-800 mb-6">Pendataan lowongan pekerjaan</h1>
+<h1 class="text-2xl font-semibold text-gray-800 mb-6">{{ $title }}</h1>
 
 <!-- Tabel Pelamar -->
 <div class="bg-white rounded-2xl shadow-md p-6 mt-4 border border-gray-200">
     <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold text-gray-800">Daftar Pelamar</h2>
+        <h2 class="text-lg font-semibold text-gray-800">Daftar Lowongan</h2>
         <button id="openTambahBtn"
             class="px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition flex items-center text-sm">
-            <i class="fa fa-plus mr-1"></i> Tambah Pelamar
+            <i class="fa fa-plus mr-1"></i> Tambah Lowongan
         </button>
     </div>
 
     <div class="relative overflow-x-auto rounded-2xl">
-        <table id="applicantsTable" class="w-full text-sm text-left text-gray-700 border border-gray-200">
+        <table id="vacancyTable" class="w-full text-sm text-left text-gray-700 border border-gray-200">
             <thead class="bg-green-500 text-white uppercase">
                 <tr>
                     <th class="px-4 py-2 border-gray-200">No</th>
@@ -36,43 +36,33 @@
             </thead>
 
             <tbody>
-               <tr class="border-b border-gray-200 bg-white hover:bg-green-50 transition">
-                    <td class="px-4 py-2">1</td>
-                    <td class="px-4 py-2 font-medium text-gray-900">John Doe</td>
-                    <td class="px-4 py-2">PT ABC Technology</td>
-                    <td class="px-4 py-2">Frontend Developer</td>
-                    <td class="px-4 py-2">25</td>
-                    <td class="px-4 py-2">Laki-laki</td>
-                    <td class="px-4 py-2">S1</td>
-                    <td class="px-4 py-2">Teknik Informatika</td>
-                    <td class="px-4 py-2">2022</td>
-                    <td class="px-4 py-2">1 tahun</td>
-                    <td class="px-4 py-2">ReactJS, MySQL, Git</td>
-                    <td class="px-4 py-2">Komunikatif, Leadership</td>
-                    <td class="px-4 py-2">
-                        <select class="status-vaksinasi text-white text-xs px-2 py-0.5 rounded-full">
-                            <option value="Lengkap">Lengkap</option>
-                            <option value="Belum Lengkap">Belum Lengkap</option>
-                            <option value="Belum Vaksin">Belum Vaksin</option>
-                        </select>
-                    </td>
-                    <td class="px-4 py-2">
-                        <select class="status-pernikahan text-white text-xs px-2 py-0.5 rounded-full">
-                            <option value="Sudah menikah">Sudah menikah</option>
-                            <option value="Belum menikah">Belum menikah</option>
-                        </select>
-                    </td>
-                    <td class="px-4 py-2 flex space-x-3 text-lg">
-                        <button class="text-blue-600 hover:scale-110 transition" title="Edit"
-                            onclick="openEditModal(this)">
-                            <i class="fa fa-pen"></i>
-                        </button>
-                        <button class="text-red-500 hover:scale-110 transition" title="Hapus" onclick="openDeleteModal()">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
+@foreach ($vacancies as $vacancy)
+<tr>
+    <td>{{ $loop->iteration }}</td>
+    <td>{{ $vacancy->company->nama_perusahaan?? '-' }}</td>
+    <td>{{ $vacancy->posisi }}</td>
+    <td>{{ $vacancy->qualification->usia ?? '-' }}</td>
+    <td>{{ $vacancy->qualification->jenis_kelamin ?? '-' }}</td>
+    <td>{{ $vacancy->qualification->pendidikan_terakhir ?? '-' }}</td>
+    <td>{{ $vacancy->qualification->jurusan ?? '-' }}</td>
+    <td>{{ $vacancy->qualification->tahun_lulus ?? '-' }}</td>
+    <td>{{ $vacancy->qualification->pengalaman_kerja ?? '-' }}</td>
+    <td>{{ $vacancy->qualification->skill_teknis ?? '-' }}</td>
+    <td>{{ $vacancy->qualification->skill_non_teknis ?? '-' }}</td>
+    <td>{{ $vacancy->qualification->status_vaksinasi ?? '-' }}</td>
+    <td>{{ $vacancy->qualification->status_pernikahan ?? '-' }}</td>
+    <td class="px-4 py-2 flex space-x-3 text-lg">
+        <button class="text-blue-600 hover:scale-110 transition" title="Edit" onclick="openEditModal(this)">
+            <i class="fa fa-pen"></i>
+        </button>
+        <button class="text-red-500 hover:scale-110 transition" title="Hapus" onclick="openDeleteModal()">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>
+@endforeach
+</tbody>
+
         </table>
     </div>
 </div>
@@ -85,41 +75,42 @@
 <!-- MODAL TAMBAH -->
 <div id="tambahModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
     <div class="{{ $modalClasses }}">
-        <h2 class="text-base font-semibold mb-2 text-gray-800">Tambah Pelamar</h2>
-        <form id="tambahForm">
-            <div class="grid grid-cols-2 gap-2">
-                @foreach(['Nama','Perusahaan','Posisi','Usia','Jenis Kelamin','Pendidikan','Jurusan','Tahun Lulus','Pengalaman Kerja','Skill Teknis','Skill Non Teknis','Vaksin','Pernikahan'] as $field)
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700">{{ $field }}</label>
-                        @if($field=='Jenis Kelamin' || $field=='Pernikahan' || $field=='Vaksin')
-                            <select class="{{ $inputClasses }}">
-                                @if($field=='Jenis Kelamin')
-                                    <option>Laki-laki</option>
-                                    <option>Perempuan</option>
-                                @elseif($field=='Vaksin')
-                                    <option>Lengkap</option>
-                                    <option>Belum Lengkap</option>
-                                    <option>Belum Vaksin</option>
-                                @else
-                                    <option>Sudah menikah</option>
-                                    <option>Belum menikah</option>
-                                @endif
-                            </select>
-                        @elseif(str_contains($field,'Skill'))
-                            <textarea class="{{ $inputClasses }}" rows="2"></textarea>
-                        @elseif($field=='Usia' || $field=='Tahun Lulus')
-                            <input type="number" class="{{ $inputClasses }}">
-                        @else
-                            <input type="text" class="{{ $inputClasses }}">
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-            <div class="mt-4 flex justify-end space-x-2">
-                <button type="button" id="closeTambahBtn" class="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 text-sm">Batal</button>
-                <button type="submit" class="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm">Simpan</button>
-            </div>
-        </form>
+        <h2 class="text-base font-semibold mb-2 text-gray-800">Tambah Lowongan</h2>
+        <form action="{{ route('vacancies.store') }}" method="POST">
+    @csrf
+    <div class="grid grid-cols-2 gap-4">
+        <input type="text" name="nama_lowongan" placeholder="Nama Lowongan" class="border p-2 rounded" required>
+        <input type="text" name="posisi" placeholder="Posisi" class="border p-2 rounded" required>
+
+        <!-- Dropdown perusahaan -->
+        <select name="company_id" class="border p-2 rounded" required>
+            <option value="">-- Pilih Perusahaan --</option>
+            @foreach ($companies as $company)
+                <option value="{{ $company->id }}">{{ $company->nama_perusahaan }}</option>
+            @endforeach
+        </select>
+
+        <input type="number" name="usia" placeholder="Usia" class="border p-2 rounded">
+        <input type="text" name="jenis_kelamin" placeholder="Jenis Kelamin" class="border p-2 rounded">
+        <input type="text" name="pendidikan_terakhir" placeholder="Pendidikan Terakhir" class="border p-2 rounded">
+        <input type="text" name="jurusan" placeholder="Jurusan" class="border p-2 rounded">
+        <input type="number" name="tahun_lulus" placeholder="Tahun Lulus" class="border p-2 rounded">
+        <input type="text" name="pengalaman_kerja" placeholder="Pengalaman Kerja" class="border p-2 rounded">
+        <input type="text" name="skill_teknis" placeholder="Skill Teknis" class="border p-2 rounded">
+        <input type="text" name="skill_non_teknis" placeholder="Skill Non Teknis" class="border p-2 rounded">
+        <select name="status_vaksinasi" class="border p-2 rounded">
+            <option value="Lengkap">Lengkap</option>
+            <option value="Belum Lengkap">Belum Lengkap</option>
+            <option value="Belum Vaksin">Belum Vaksin</option>
+        </select>
+        <select name="status_pernikahan" class="border p-2 rounded">
+            <option value="Sudah menikah">Sudah menikah</option>
+            <option value="Belum menikah">Belum menikah</option>
+        </select>
+    </div>
+
+    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded mt-4">Simpan</button>
+</form>
     </div>
 </div>
 
@@ -129,7 +120,7 @@
         <h2 class="text-base font-semibold mb-2 text-gray-800">Edit Pelamar</h2>
         <form id="editForm">
             <div class="grid grid-cols-2 gap-2">
-                @foreach(['Nama','Perusahaan','Posisi','Usia','Jenis Kelamin','Pendidikan','Jurusan','Tahun Lulus','Pengalaman Kerja','Skill Teknis','Skill Non Teknis'] as $field)
+                @foreach(['Nama','Perusahaan','Posisi','Usia','Jenis Kelamin','Pendidikan Terakhir','Jurusan','Tahun Lulus','Pengalaman Kerja','Skill Teknis','Skill Non Teknis'] as $field)
                     <div>
                         <label class="block text-xs font-medium text-gray-700">{{ $field }}</label>
                         @if($field=='Jenis Kelamin')
@@ -193,7 +184,7 @@
         document.getElementById("editPosisi").value = cells[3].innerText;
         document.getElementById("editUsia").value = cells[4].innerText;
         document.getElementById("editJenisKelamin").value = cells[5].innerText;
-        document.getElementById("editPendidikan").value = cells[6].innerText;
+        document.getElementById("editPendidikanTerakhir").value = cells[6].innerText;
         document.getElementById("editJurusan").value = cells[7].innerText;
         document.getElementById("editTahunLulus").value = cells[8].innerText;
         document.getElementById("editPengalamanKerja").value = cells[9].innerText;

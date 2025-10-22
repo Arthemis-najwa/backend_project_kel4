@@ -1,6 +1,5 @@
-<nav class="bg-gray-50 z-10 p-5 px-10 h-[90px] left-[280px] w-[calc(100%-320px)] flex items-center fixed top-0"
-    id="topbar">
-    <div class="flex flex-col gap-1.5 flex-[1] cursor-pointer" id="hamburger">
+<nav class="bg-gray-50 z-10 p-5 px-10 h-[90px] left-[320px] w-[calc(100%-320px)] flex items-center fixed top-0">
+    <div class="flex flex-col gap-1.5 flex-[1]">
         <hr class="border-2 border-blue-500 w-[25px]">
         <hr class="border-2 border-blue-500 w-[25px]">
         <hr class="border-2 border-blue-500 w-[25px]">
@@ -15,7 +14,38 @@
                 placeholder="Cari disini..." required />
         </div>
     </div>
-    <div class="flex-[1] flex justify-end">
-        <div class="size-12 bg-gray-300 rounded-full"></div>
+
+    <!-- Profil dropdown -->
+    <div class="flex-[1] flex justify-end relative">
+        <button id="profileButton" class="size-12 bg-gray-300 rounded-full flex items-center justify-center focus:outline-none">
+            <i class="fa-regular fa-user text-gray-600"></i>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="dropdownMenu"
+            class="hidden absolute top-[70px] right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-md py-2 z-20">
+            <a href="{{ route('password.request') }}"
+                class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 text-sm">
+                <i class="fa-regular fa-key mr-2"></i> Ganti Password
+            </a>
+        </div>
     </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const profileButton = document.getElementById('profileButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    profileButton.addEventListener('click', () => {
+        dropdownMenu.classList.toggle('hidden');
+    });
+
+    // Tutup dropdown jika klik di luar area
+    document.addEventListener('click', (e) => {
+        if (!profileButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+});
+</script>
+
 </nav>
