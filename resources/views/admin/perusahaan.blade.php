@@ -1,4 +1,3 @@
-
 @extends('layouts.admin')
 
 @section('content')
@@ -94,8 +93,8 @@
     </div>
 
     <!-- Modal Edit -->
-    <div id="editModal" tabindex="-1" aria-hidden="true"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id="editModal" tabindex="-1"
+        class="hidden fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
         <div class="relative p-4 w-full max-w-2xl max-h-full">
             <div class="relative bg-white rounded-lg shadow">
 
@@ -255,16 +254,18 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const table = document.querySelector('#companyTable');
             if (!$.fn.DataTable.isDataTable(table)) {
                 new DataTable(table, {
-                    paging: true,
-                    ordering: true,
-                    info: true,
+                    paging: false,
+                    ordering: false,
+                    searching: false,
+                    info: false,
                     autoWidth: false,
-                    stripeClasses: [],
+                    stripeClasses: [],
                 });
             }
 
@@ -287,4 +288,3 @@
         });
     </script>
 @endsection
-```
