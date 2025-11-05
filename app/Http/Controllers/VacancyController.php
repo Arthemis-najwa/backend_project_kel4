@@ -78,9 +78,5 @@ class VacancyController extends Controller
             'status_pernikahan' => $request->status_pernikahan,
         ]);
     }
-<<<<<<< HEAD
-
-    return redirect()->route('lowongan-pekerjaan')->with('success', 'Lowongan berhasil diperbarui!');
 }
-
 }
