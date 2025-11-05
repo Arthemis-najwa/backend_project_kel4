@@ -22,9 +22,51 @@ class VacancyController extends Controller
     }
 
     public function store(Request $request)
+{
+    $vacancy = Vacancy::create([
+        'company_id' => $request->company_id,
+        'posisi' => $request->posisi,
+    ]);
+
+    Qualification::create([
+        'vacancy_id' => $vacancy->id,
+        'usia_minimum' => $request->usia_minimum,
+        'usia_maksimum' => $request->usia_maksimum,
+        'jenis_kelamin' => $request->jenis_kelamin,
+        'pendidikan_terakhir' => $request->pendidikan_terakhir,
+        'jurusan' => $request->jurusan,
+        'tahun_lulus' => $request->tahun_lulus,
+        'pengalaman_kerja' => $request->pengalaman_kerja,
+        'skill_teknis' => $request->skill_teknis,
+        'skill_non_teknis' => $request->skill_non_teknis,
+        'status_vaksinasi' => $request->status_vaksinasi,
+        'status_pernikahan' => $request->status_pernikahan,
+    ]);
+
+    return redirect()->back()->with('success', 'Lowongan berhasil ditambahkan!');
+}
+
+    public function destroy($id)
     {
-        $qualification = Qualification::create([
-            'usia' => $request->usia,
+        $vacancies = Vacancy::findOrFail($id);
+        $vacancies->delete();
+        return redirect()->route('lowongan-pekerjaan')->with('success', 'Data perusahaan berhasil dihapus!');
+    }
+
+   public function update(Request $request, $id)
+{
+    $vacancy = Vacancy::findOrFail($id);
+    $qualification = $vacancy->qualification;
+
+    $vacancy->update([
+        'company_id' => $request->company_id,
+        'posisi' => $request->posisi,
+    ]);
+
+    if ($qualification) {
+        $qualification->update([
+            'usia_minimum' => $request->usia_minimum,
+            'usia_maksimum' => $request->usia_maksimum,
             'jenis_kelamin' => $request->jenis_kelamin,
             'pendidikan_terakhir' => $request->pendidikan_terakhir,
             'jurusan' => $request->jurusan,
@@ -35,13 +77,10 @@ class VacancyController extends Controller
             'status_vaksinasi' => $request->status_vaksinasi,
             'status_pernikahan' => $request->status_pernikahan,
         ]);
-
-        Vacancy::create([
-            'company_id' => $request->company_id,
-            'qualification_id' => $qualification->id,
-            'posisi' => $request->posisi,
-        ]);
-
-        return redirect()->back()->with('success', 'Lowongan berhasil ditambahkan!');
     }
+
+    return redirect()->route('lowongan-pekerjaan')->with('success', 'Lowongan berhasil diperbarui!');
+}
+
+
 }

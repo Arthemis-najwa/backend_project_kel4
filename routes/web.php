@@ -7,6 +7,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\VacancyController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApplicantController;
 
 require __DIR__ . '/auth.php';
 
@@ -54,3 +55,11 @@ Route::delete('/vacancies/{id}', [VacancyController::class, 'destroy'])->name('v
 // Ganti Password
 Route::get('/ganti-password', [ProfileController::class, 'editPassword'])->name('ganti-password');
 Route::post('/ganti-password', [ProfileController::class, 'updatePassword'])->name('update-password');
+
+// Applicant CRUD
+Route::get('/pelamar', [ApplicantController::class, 'index'])->name('pelamar');
+Route::post('/applicants/store', [ApplicantController::class, 'store'])->name('applicants.store');
+Route::put('/applicants/{id}', [ApplicantController::class, 'update'])->name('applicants.update');
+Route::delete('/applicants/{id}', [ApplicantController::class, 'destroy'])->name('applicants.destroy');
+
+Route::get('/companies/{id}/export-applicants', [CompanyController::class,'exportApplicants'])->name('companies.exportApplicants');

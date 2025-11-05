@@ -1,4 +1,3 @@
-
 @extends('layouts.admin')
 
 @section('content')
@@ -31,7 +30,7 @@
                         <th class="px-6 py-4 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="dataTableBody">
                     @forelse ($companies as $index => $company)
                         <tr class="bg-white border-b hover:bg-gray-50 transition">
                             <td class="px-6 py-4 text-center">{{ $index + 1 }}</td>
@@ -42,12 +41,11 @@
 
                             <!-- Status Lowongan -->
                             <td class="px-6 py-4 text-center">
-                                <button
-                                    class="text-white text-xs font-medium px-3 py-1 rounded-full shadow focus:outline-none
-                                        {{ strtolower($company->status_lowongan ?? 'Dibuka') == 'dibuka' ? 'bg-green-500' : 'bg-red-500' }}">
-                                    {{ $company->status_lowongan ?? 'Dibuka' }}
-                                    <i class="fa fa-chevron-down ml-1 text-[10px]"></i>
-                                </button>
+                                <select class="status-dropdown text-sm rounded-lg border-0 focus:ring-2 focus:ring-green-500 transition-colors"
+                                    data-id="{{ $company->id }}">
+                                    <option value="Dibuka" {{ $company->status_lowongan == 'Dibuka' ? 'selected' : '' }}>Dibuka</option>
+                                    <option value="Ditutup" {{ $company->status_lowongan == 'Ditutup' ? 'selected' : '' }}>Ditutup</option>
+                                </select>
                             </td>
 
                             <!-- Aksi -->
@@ -94,8 +92,8 @@
     </div>
 
     <!-- Modal Edit -->
-    <div id="editModal" tabindex="-1" aria-hidden="true"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id="editModal" tabindex="-1"
+        class="hidden fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
         <div class="relative p-4 w-full max-w-2xl max-h-full">
             <div class="relative bg-white rounded-lg shadow">
 
@@ -255,14 +253,44 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
+
+    <!-- Tambahan style dropdown -->
+   <style>
+    .status-dropdown {
+        border-radius: 0.5rem;
+        padding: 6px 12px;
+        color: white;
+        font-size: 0.875rem;
+        font-weight: 500;
+        height: 36px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .status-dibuka {
+        background-color: #16a34a !important; /* Hijau */
+    }
+
+    .status-ditutup {
+        background-color: #dc2626 !important; /* Merah */
+    }
+
+    .status-dropdown option {
+        background-color: white;
+        color: black;
+    }
+</style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const table = document.querySelector('#companyTable');
             if (!$.fn.DataTable.isDataTable(table)) {
                 new DataTable(table, {
-                    paging: true,
-                    ordering: true,
-                    info: true,
+                    paging: false,
+                    ordering: false,
+                    searching: false,
+                    info: false,
                     autoWidth: false,
                     stripeClasses: [],
                 });
@@ -284,7 +312,35 @@
             $(document).on('click', '#closeModal, #closeModalBtn', function() {
                 editModal.addClass('hidden');
             });
+
+            // Set warna awal berdasarkan status
+            $('.status-dropdown').each(function() {
+                const status = $(this).val();
+                $(this).css('background-color', status === 'Dibuka' ? '#0EDA52' : '#E82020');
+            });
+
+            // 🟢 Dropdown status lowongan AJAX update
+            $('.status-dropdown').on('change', function() {
+                const id = $(this).data('id');
+                const dropdown = $(this);
+                var status = dropdown.val()
+                $.ajax({
+                    url: `/companies/${id}/update-status`,
+                    method: 'PUT',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        status_lowongan: status
+                    },
+                    success: function() {
+                        // Update warna berdasarkan status baru
+                        dropdown.css('background-color', status === 'Dibuka' ? '#0EDA52' : '#E82020');
+                        alert('Status lowongan berhasil diperbarui!');
+                    },
+                    error: function() {
+                        alert('Terjadi kesalahan saat memperbarui status.');
+                    }
+                });
+            });
         });
     </script>
 @endsection
-```

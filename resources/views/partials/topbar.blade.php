@@ -14,7 +14,6 @@
                 placeholder="Cari disini..." required />
         </div>
     </div>
-
     <!-- Profil dropdown -->
     <div class="flex-[1] flex justify-end relative">
         <button id="profileButton" class="size-12 bg-gray-300 rounded-full flex items-center justify-center focus:outline-none">

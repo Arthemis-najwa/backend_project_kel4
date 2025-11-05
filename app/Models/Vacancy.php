@@ -21,7 +21,8 @@ class Vacancy extends Model
     }
 
     public function qualification()
-    {
-        return $this->belongsTo(Qualification::class);
-    }
+{
+    return $this->hasOne(Qualification::class);
+}
+
 }

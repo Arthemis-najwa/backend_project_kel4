@@ -37,12 +37,12 @@ class CompanyController extends Controller
         return redirect()->route('perusahaan')->with('success', 'Data perusahaan berhasil dihapus!');
     }
 
-     public function export($id)
-    {
-        $company = Company::findOrFail($id);
-        $filename = 'pelamar_' . str_replace(' ', '_', strtolower($company->nama_perusahaan)) . '.xlsx';
-        return Excel::download(new ApplicantsExport($company->id), $filename);
-    }
+    public function exportApplicants($id)
+{
+    $company = Company::findOrFail($id);
+    $filename = 'applicants_for_' . Str::slug($company->nama_perusahaan) . '.xlsx';
+    return Excel::download(new ApplicantsForCompanyExport($id), $filename);
+}
      public function update(Request $request, $id)
     {
         $request->validate([

@@ -10,12 +10,12 @@ class Qualification extends Model
     use HasFactory;
 
     protected $fillable = [
-        'applicant_id',
+        'vacancy_id',
         'status_vaksinasi',
         'status_pernikahan',
         'jenis_kelamin',
-        'usia',
-        'vacancy_id',
+        'usia_minimum',
+        'usia_maksimum',
         'pendidikan_terakhir',
         'jurusan',
         'tahun_lulus',
@@ -25,8 +25,9 @@ class Qualification extends Model
     ];
 
     public function vacancy()
-    {
-        return $this->belongsTo(Vacancy::class);
-    }
+{
+    return $this->belongsTo(Vacancy::class);
+}
+
 }
 
