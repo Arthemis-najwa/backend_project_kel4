@@ -34,12 +34,8 @@
                     <th class="px-4 py-2 border-gray-200">Aksi</th>
                 </tr>
             </thead>
-
-<<<<<<< HEAD
             <tbody id="dataTableBody">
-=======
             <tbody>
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
                 @foreach ($vacancies as $vacancy)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
@@ -57,7 +53,6 @@
                     <td>{{ $vacancy->qualification->status_vaksinasi ?? '-' }}</td>
                     <td>{{ $vacancy->qualification->status_pernikahan ?? '-' }}</td>
                     <td class="px-4 py-2 flex space-x-3 text-lg">
-<<<<<<< HEAD
                         <button class="edit-btn text-blue-600 hover:scale-110 transition" title="Edit"
                          data-id="{{ $vacancy->id }}"
                          data-perusahaan="{{ $vacancy->company_id }}"
@@ -85,14 +80,12 @@
                                         <i class="fa fa-trash text-lg"></i>
                                     </button>
                         </form>
-=======
                         <button class="text-blue-600 hover:scale-110 transition" title="Edit" onclick="openEditModal()">
                             <i class="fa fa-pen"></i>
                         </button>
                         <button class="text-red-500 hover:scale-110 transition" title="Hapus" onclick="openDeleteModal()">
                             <i class="fa fa-trash"></i>
                         </button>
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
                     </td>
                 </tr>
                 @endforeach
