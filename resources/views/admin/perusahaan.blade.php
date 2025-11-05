@@ -253,35 +253,6 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
-
-    <!-- Tambahan style dropdown -->
-   <style>
-    .status-dropdown {
-        border-radius: 0.5rem;
-        padding: 6px 12px;
-        color: white;
-        font-size: 0.875rem;
-        font-weight: 500;
-        height: 36px;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .status-dibuka {
-        background-color: #16a34a !important; /* Hijau */
-    }
-
-    .status-ditutup {
-        background-color: #dc2626 !important; /* Merah */
-    }
-
-    .status-dropdown option {
-        background-color: white;
-        color: black;
-    }
-</style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const table = document.querySelector('#companyTable');
@@ -292,7 +263,7 @@
                     searching: false,
                     info: false,
                     autoWidth: false,
-                    stripeClasses: [],
+                    stripeClasses: [],
                 });
             }
 
