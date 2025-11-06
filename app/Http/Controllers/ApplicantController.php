@@ -20,6 +20,52 @@ class ApplicantController extends Controller
 
     public function store(Request $request)
 {
+    $request->validate([
+        'nama_lengkap'        => 'required|string|max:255',
+        'tanggal_lahir'       => 'required|date',
+        'usia'                => 'required|integer',
+        'jenis_kelamin'       => 'required|in:L,P',
+        'status_pernikahan'   => 'required|string|max:255',
+        'alamat'              => 'required|string|max:255',
+        'no_telp'             => 'required|string|max:255|regex:/^[0-9+\-\s]{8,15}$/',
+        'email'               => 'required|email|max:255',
+        'pendidikan_terakhir' => 'required|string|max:255',
+        'jurusan'             => 'required|string|max:255',
+        'tahun_lulus'         => 'required|integer|min:1900|max:' . date('Y'),
+        'pengalaman_kerja'    => 'nullable|string',
+        'skill_teknis'        => 'nullable|string',
+        'skill_non_teknis'    => 'nullable|string',
+        'status_vaksinasi'    => 'nullable|string|max:255',
+        'perusahaan_tujuan'   => 'nullable|string|max:255',
+    ], [
+        'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
+
+        'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
+
+        'usia.required' => 'Usia wajib diisi.',
+        'usia.integer' => 'Usia harus berupa angka.',
+
+        'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+
+        'status_pernikahan.required' => 'Status pernikahan wajib diisi.',
+
+        'alamat.required' => 'Alamat wajib diisi.',
+        'alamat.max' => 'Alamat maksimal 255 karakter.',
+
+        'no_telp.required' => 'Nomor telepon wajib diisi.',
+        'no_telp.regex' => 'Nomor telepon hanya boleh angka dan simbol + atau -.',
+
+        'email.required' => 'Email wajib diisi.',
+        'email.email' => 'Masukkan format email yang valid, misalnya: nama@gmail.com.',
+        'email.max' => 'Email maksimal 255 karakter.',
+
+        'pendidikan_terakhir.required' => 'Pendidikan terakhir wajib diisi.',
+        'jurusan.required' => 'Jurusan wajib diisi.',
+        'tahun_lulus.required' => 'Tahun lulus wajib diisi.',
+        'tahun_lulus.integer' => 'Tahun lulus harus berupa angka.',
+        'tahun_lulus.min' => 'Tahun lulus tidak valid.',
+        'tahun_lulus.max' => 'Tahun lulus tidak boleh melebihi tahun ini.',
+    ]);
     $applicant = Applicant::create($request->except('_token'));
 
     $this->matchVacancies($applicant);

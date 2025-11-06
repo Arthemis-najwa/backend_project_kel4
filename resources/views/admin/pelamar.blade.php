@@ -125,102 +125,164 @@
             <form id="tambahForm" class="px-6 py-5" action="{{ route('applicants.store') }}" method="POST">
                 @csrf
                 <div class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2">
+                    
+                    <!-- Nama Lengkap -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Nama Lengkap</label>
-                        <input type="text" name="nama_lengkap" placeholder="Masukkan nama lengkap"
+                        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}"
+                            placeholder="Masukkan nama lengkap"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        @error('nama_lengkap')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Tanggal Lahir -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Tanggal Lahir</label>
-                        <input type="date" name="tanggal_lahir"
+                        <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        @error('tanggal_lahir')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Usia -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Usia</label>
-                        <input type="number" name="usia" placeholder="Masukkan usia"
+                        <input type="number" name="usia" value="{{ old('usia') }}" placeholder="Masukkan usia"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        @error('usia')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Jenis Kelamin -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Jenis Kelamin</label>
                         <select name="jenis_kelamin"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
                             <option value="">-- Pilih Jenis Kelamin --</option>
-                            <option value="L">Laki-laki</option>
-                            <option value="P">Perempuan</option>
+                            <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                            <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
                         </select>
+                        @error('jenis_kelamin')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Status Pernikahan -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Status Pernikahan</label>
                         <select name="status_pernikahan"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
                             <option value="">-- Pilih Status --</option>
-                            <option value="Belum Menikah">Belum Menikah</option>
-                            <option value="Menikah">Menikah</option>
+                            <option value="Belum Menikah" {{ old('status_pernikahan') == 'Belum Menikah' ? 'selected' : '' }}>Belum Menikah</option>
+                            <option value="Menikah" {{ old('status_pernikahan') == 'Menikah' ? 'selected' : '' }}>Menikah</option>
                         </select>
+                        @error('status_pernikahan')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Alamat -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Alamat</label>
-                        <textarea name="alamat" placeholder="Masukkan alamat lengkap"
-                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" rows="2" required></textarea>
+                        <textarea name="alamat" placeholder="Masukkan alamat lengkap" rows="2"
+                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>{{ old('alamat') }}</textarea>
+                        @error('alamat')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- No Telepon -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">No Telepon</label>
-                        <input type="text" name="no_telp" placeholder="Contoh: 081234567890"
+                        <input type="text" name="no_telp" value="{{ old('no_telp') }}" placeholder="Contoh: 081234567890"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        @error('no_telp')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Email -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" name="email" placeholder="Contoh: email@example.com"
+                        <input type="email" name="email" value="{{ old('email') }}" placeholder="Contoh: email@example.com"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        @error('email')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Pendidikan Terakhir -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Pendidikan Terakhir</label>
-                        <input type="text" name="pendidikan_terakhir" placeholder="Contoh: S1, SMA, D3"
+                        <input type="text" name="pendidikan_terakhir" value="{{ old('pendidikan_terakhir') }}" placeholder="Contoh: S1, SMA, D3"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        @error('pendidikan_terakhir')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Jurusan -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Jurusan</label>
-                        <input type="text" name="jurusan" placeholder="Contoh: Teknik Informatika"
+                        <input type="text" name="jurusan" value="{{ old('jurusan') }}" placeholder="Contoh: Teknik Informatika"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        @error('jurusan')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Tahun Lulus -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Tahun Lulus</label>
-                        <input type="number" name="tahun_lulus" placeholder="Contoh: 2020"
+                        <input type="number" name="tahun_lulus" value="{{ old('tahun_lulus') }}" placeholder="Contoh: 2020"
                             class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        @error('tahun_lulus')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Pengalaman Kerja -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Pengalaman Kerja</label>
-                        <input type="text" name="pengalaman_kerja" placeholder="Contoh: 2 tahun di PT XYZ"
-                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        <input type="text" name="pengalaman_kerja" value="{{ old('pengalaman_kerja') }}" placeholder="Contoh: 2 tahun di PT XYZ"
+                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500">
+                        @error('pengalaman_kerja')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Skill Teknis -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Skill Teknis</label>
-                        <textarea name="skill_teknis" placeholder="Contoh: PHP, Laravel, MySQL"
-                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" rows="2" required></textarea>
+                        <textarea name="skill_teknis" placeholder="Contoh: PHP, Laravel, MySQL" rows="2"
+                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500">{{ old('skill_teknis') }}</textarea>
+                        @error('skill_teknis')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Skill Non Teknis -->
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-gray-700">Skill Non Teknis</label>
-                        <textarea name="skill_non_teknis" placeholder="Contoh: Komunikasi, Leadership"
-                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" rows="2" required></textarea>
+                        <textarea name="skill_non_teknis" placeholder="Contoh: Komunikasi, Leadership" rows="2"
+                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500">{{ old('skill_non_teknis') }}</textarea>
+                        @error('skill_non_teknis')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+                    <!-- Perusahaan Tujuan -->
                     <div class="space-y-1 col-span-2">
                         <label class="text-sm font-medium text-gray-700">Perusahaan Tujuan</label>
-                        <input type="text" name="perusahaan_tujuan" placeholder="Contoh: PT ABC Technology"
-                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500" required>
+                        <input type="text" name="perusahaan_tujuan" value="{{ old('perusahaan_tujuan') }}" placeholder="Contoh: PT ABC Technology"
+                            class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-green-500 focus:border-green-500">
+                        @error('perusahaan_tujuan')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
@@ -313,7 +375,6 @@
         </div>
     </div>
 </div>
-
 <script>
     // Modal Tambah
     const tambahModal = document.getElementById("tambahModal");

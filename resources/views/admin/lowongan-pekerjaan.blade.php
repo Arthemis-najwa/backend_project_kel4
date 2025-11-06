@@ -80,12 +80,7 @@
                                         <i class="fa fa-trash text-lg"></i>
                                     </button>
                         </form>
-                        <button class="text-blue-600 hover:scale-110 transition" title="Edit" onclick="openEditModal()">
-                            <i class="fa fa-pen"></i>
-                        </button>
-                        <button class="text-red-500 hover:scale-110 transition" title="Hapus" onclick="openDeleteModal()">
-                            <i class="fa fa-trash"></i>
-                        </button>
+                        
                     </td>
                 </tr>
                 @endforeach
@@ -117,7 +112,6 @@
                 <div class="grid grid-cols-2 gap-4">
                     <input type="text" name="posisi" placeholder="Posisi"
                         class="bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm" required>
-<<<<<<< HEAD
                     <select name="company_id"
                         class="bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm" required>
                         <option value="">-- Pilih Perusahaan --</option>
@@ -137,31 +131,6 @@
                         <option value="Laki-laki">Laki-laki</option>
                         <option value="Perempuan">Perempuan</option>
                     </select>
-
-=======
-
-                    <select name="company_id"
-                        class="bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm" required>
-                        <option value="">-- Pilih Perusahaan --</option>
-                        @foreach ($companies as $company)
-                            <option value="{{ $company->id }}">{{ $company->nama_perusahaan }}</option>
-                        @endforeach
-                    </select>
-
-                    <input type="number" name="usia_minimum" placeholder="Usia Minimum"
-                        class="bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm">
-                    <input type="number" name="usia_maksimum" placeholder="Usia Maksimum"
-                        class="bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm">
-
-                    <!-- Jenis kelamin dropdown -->
-                    <select name="jenis_kelamin"
-                        class="bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm">
-                        <option value="">-- Pilih Jenis Kelamin --</option>
-                        <option value="Laki-laki">Laki-laki</option>
-                        <option value="Perempuan">Perempuan</option>
-                    </select>
-
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
                     <input type="text" name="pendidikan_terakhir" placeholder="Pendidikan Terakhir"
                         class="bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm">
                     <input type="text" name="jurusan" placeholder="Jurusan"
@@ -216,8 +185,6 @@
                     </svg>
                 </button>
             </div>
-
-<<<<<<< HEAD
             <form id="editForm" method="POST"  class="p-4 space-y-4">
                 @csrf
                 @method('PUT')
@@ -234,22 +201,10 @@
 
                     <!-- Jenis kelamin dropdown -->
                     <select id="editJenisKelamin" name="jenis_kelamin" class="border p-2 rounded">
-=======
-            <form id="editForm" class="p-4 space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="editPosisi" class="border p-2 rounded" placeholder="Posisi">
-                    <input type="number" id="editUsiaMin" class="border p-2 rounded" placeholder="Usia Minimum">
-                    <input type="number" id="editUsiaMax" class="border p-2 rounded" placeholder="Usia Maksimum">
-
-                    <!-- Jenis kelamin dropdown -->
-                    <select id="editJenisKelamin" class="border p-2 rounded">
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
                         <option value="">-- Pilih Jenis Kelamin --</option>
                         <option value="Laki-laki">Laki-laki</option>
                         <option value="Perempuan">Perempuan</option>
                     </select>
-
-<<<<<<< HEAD
                     <input type="text" id="editPendidikan" name="pendidikan_terakhir" class="border p-2 rounded" placeholder="Pendidikan Terakhir">
                     <input type="text" id="editJurusan" name="jurusan" class="border p-2 rounded" placeholder="Jurusan">
                     <input type="number" id="editTahunLulus" name="tahun_lulus" class="border p-2 rounded" placeholder="Tahun Lulus">
@@ -258,34 +213,14 @@
                     <input type="text" id="editSkillNonTeknis" name="skill_non_teknis" class="border p-2 rounded" placeholder="Skill Non Teknis">
 
                     <select id="editVaksin" name="status_vaksinasi" class="border p-2 rounded">
-=======
-                    <input type="text" id="editPendidikan" class="border p-2 rounded" placeholder="Pendidikan Terakhir">
-                    <input type="text" id="editJurusan" class="border p-2 rounded" placeholder="Jurusan">
-                    <input type="number" id="editTahunLulus" class="border p-2 rounded" placeholder="Tahun Lulus">
-                    <input type="text" id="editPengalaman" class="border p-2 rounded" placeholder="Pengalaman Kerja">
-                    <input type="text" id="editSkillTeknis" class="border p-2 rounded" placeholder="Skill Teknis">
-                    <input type="text" id="editSkillNonTeknis" class="border p-2 rounded" placeholder="Skill Non Teknis">
-
-                    <select id="editVaksin" class="border p-2 rounded">
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
                         <option>Lengkap</option>
                         <option>Belum Lengkap</option>
                         <option>Belum Vaksin</option>
                     </select>
-
-<<<<<<< HEAD
-                    <select id="editPernikahan" name="status_pernikahan" class="border p-2 rounded">
-=======
-                    <select id="editPernikahan" class="border p-2 rounded">
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
-                        <option>Sudah menikah</option>
+                    <select id="editPernikahan" name="status_pernikahan" class="border p-2 rounded">                        <option>Sudah menikah</option>
                         <option>Belum menikah</option>
                     </select>
                 </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
                 <div class="flex justify-end border-t border-gray-200 pt-4">
                     <button type="button" id="closeEditBtn2"
                         class="text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 rounded-lg text-sm px-4 py-2 mr-2">Batal</button>
@@ -302,18 +237,11 @@
     const openTambahBtn = document.getElementById("openTambahBtn");
     const closeTambahBtn = document.getElementById("closeTambahBtn");
     const closeTambahBtn2 = document.getElementById("closeTambahBtn2");
-<<<<<<< HEAD
-=======
 
-    openTambahBtn.addEventListener("click", () => tambahModal.classList.remove("hidden"));
-    [closeTambahBtn, closeTambahBtn2].forEach(btn => btn.addEventListener("click", () => tambahModal.classList.add("hidden")));
-
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
     const editModal = document.getElementById("editModal");
     const closeEditBtn = document.getElementById("closeEditBtn");
     const closeEditBtn2 = document.getElementById("closeEditBtn2");
 
-<<<<<<< HEAD
     openTambahBtn.addEventListener("click", () => tambahModal.classList.remove("hidden"));
     [closeTambahBtn, closeTambahBtn2].forEach(btn => btn.addEventListener("click", () => tambahModal.classList.add("hidden")));
 
@@ -322,14 +250,9 @@
 
     function openDeleteModal() {
         alert('Hapus dummy');
-=======
-    function openEditModal() {
-        editModal.classList.remove("hidden");
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
     }
     [closeEditBtn, closeEditBtn2].forEach(btn => btn.addEventListener("click", () => editModal.classList.add("hidden")));
 
-<<<<<<< HEAD
     $(document).ready(function () {
         const editModal = $('#editModal');
         const editForm = $('#editForm');
@@ -359,10 +282,5 @@
             });
         });
     });
-=======
-    function openDeleteModal() {
-        alert('Hapus dummy');
-    }
->>>>>>> f945a6536ab3e200be5ff420c1826721d62fbf5f
 </script>
 @endsection
