@@ -6,6 +6,7 @@ use App\Models\Vacancy;
 use App\Models\Company;
 use App\Models\Qualification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VacancyController extends Controller
 {
@@ -23,6 +24,8 @@ class VacancyController extends Controller
 
     public function store(Request $request)
 {
+    try{
+        DB::beginTransaction();
     $vacancy = Vacancy::create([
         'company_id' => $request->company_id,
         'posisi' => $request->posisi,
@@ -42,8 +45,12 @@ class VacancyController extends Controller
         'status_vaksinasi' => $request->status_vaksinasi,
         'status_pernikahan' => $request->status_pernikahan,
     ]);
-
+DB::commit();
     return redirect()->back()->with('success', 'Lowongan berhasil ditambahkan!');
+    }catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+    }
 }
 
     public function destroy($id)
@@ -55,6 +62,8 @@ class VacancyController extends Controller
 
    public function update(Request $request, $id)
 {
+    try{
+        DB::beginTransaction();
     $vacancy = Vacancy::findOrFail($id);
     $qualification = $vacancy->qualification;
 
@@ -77,6 +86,12 @@ class VacancyController extends Controller
             'status_vaksinasi' => $request->status_vaksinasi,
             'status_pernikahan' => $request->status_pernikahan,
         ]);
+    }
+    DB::commit();
+    return redirect()->back()->with('success', 'Lowongan berhasil diupdate!');
+    }catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
     }
 }
 }

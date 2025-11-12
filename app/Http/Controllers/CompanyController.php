@@ -6,6 +6,7 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CompaniesExport;
+use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
 {
@@ -19,15 +20,22 @@ class CompanyController extends Controller
 
     public function store(Request $request)
     {
+        
         $request->validate([
             'nama_perusahaan' => 'required|string|max:255',
             'alamat' => 'required|string',
             'kontak' => 'required|string',
             'bidang_usaha' => 'required|string',
         ]);
-
+        try{
+        DB::beginTransaction();
         Company::create($request->all());
+        DB::commit();
         return redirect()->route('perusahaan')->with('success', 'Data perusahaan berhasil ditambahkan!');
+        } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+    }
     }
 
     public function destroy($id)
@@ -45,16 +53,21 @@ class CompanyController extends Controller
 }
      public function update(Request $request, $id)
     {
+        $company = Company::findOrFail($id);
         $request->validate([
             'nama_perusahaan' => 'required|string|max:255',
             'alamat' => 'required|string',
             'kontak' => 'required|string',
             'bidang_usaha' => 'required|string',
         ]);
-
-        $company = Company::findOrFail($id);
+        try{
+        DB::beginTransaction();
         $company->update($request->all());
-
+        DB::commit();
         return redirect()->route('perusahaan')->with('success', 'Data perusahaan berhasil diperbarui!');
+        } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+    }
     }
 }

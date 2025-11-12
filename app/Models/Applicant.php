@@ -28,15 +28,17 @@ class Applicant extends Model
         'perusahaan_tujuan'
     ];
 
-    // ✔️ pakai singular karena hasOne
     public function qualification()
     {
         return $this->hasOne(ApplicantQualification::class);
     }
 
-    // ✔️ hanya satu relasi recommendations
     public function recommendations()
     {
         return $this->hasMany(ApplicantRecommendation::class);
     }
+    public function files()
+{
+    return $this->hasMany(ApplicantFile::class);
+}
 }

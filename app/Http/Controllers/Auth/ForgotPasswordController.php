@@ -12,13 +12,11 @@ use Carbon\Carbon;
 
 class ForgotPasswordController extends Controller
 {
-    // 🔹 1️⃣ Tampilkan form "Lupa Password"
     public function showLinkRequestForm()
     {
         return view('auth.forgot-password');
     }
 
-    // 🔹 2️⃣ Kirim OTP ke email
     public function sendOtp(Request $request)
     {
         $request->validate([
@@ -56,7 +54,6 @@ class ForgotPasswordController extends Controller
         return redirect()->route('password.otp.form')->with('success', 'Kode OTP telah dikirim ke email kamu!');
     }
 
-    // 🔹 3️⃣ Tampilkan form verifikasi OTP
     public function showOtpForm()
     {
         $email = session('email');
@@ -65,8 +62,6 @@ class ForgotPasswordController extends Controller
         }
         return view('auth.verify-otp', compact('email'));
     }
-
-    // 🔹 4️⃣ Verifikasi OTP
     public function verifyOtp(Request $request)
     {
         $request->validate([
@@ -95,7 +90,6 @@ class ForgotPasswordController extends Controller
         return redirect()->route('password.reset.form')->with('success', 'OTP berhasil diverifikasi!');
     }
 
-    // 🔹 5️⃣ Tampilkan form reset password
     public function showResetForm()
     {
         $email = session('email');
@@ -106,7 +100,7 @@ class ForgotPasswordController extends Controller
         return view('auth.reset-password', compact('email'));
     }
 
-    // 🔹 6️⃣ Simpan password baru
+
     public function resetPassword(Request $request)
     {
         $request->validate([

@@ -39,12 +39,13 @@
                             <td class="px-6 py-4">{{ $company->kontak }}</td>
                             <td class="px-6 py-4">{{ $company->alamat }}</td>
 
-                            <!-- Status Lowongan -->
+                            <!-- Status Lowongan dengan Dropdown -->
                             <td class="px-6 py-4 text-center">
-                                <select class="status-dropdown text-sm rounded-lg border-0 focus:ring-2 focus:ring-green-500 transition-colors"
-                                    data-id="{{ $company->id }}">
-                                    <option value="Dibuka" {{ $company->status_lowongan == 'Dibuka' ? 'selected' : '' }}>Dibuka</option>
-                                    <option value="Ditutup" {{ $company->status_lowongan == 'Ditutup' ? 'selected' : '' }}>Ditutup</option>
+                                <select class="status-dropdown px-2 py-1 rounded-full text-white text-xs font-medium shadow focus:outline-none" 
+                                        data-id="{{ $company->id }}"
+                                        onchange="updateStatusColor(this)">
+                                    <option value="Buka" {{ $company->status_lowongan == 'Buka' ? 'selected' : '' }}>Buka</option>
+                                    <option value="Tutup" {{ $company->status_lowongan == 'Tutup' ? 'selected' : '' }}>Tutup</option>
                                 </select>
                             </td>
 
@@ -254,7 +255,32 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
+        // Fungsi untuk update warna dropdown status lowongan
+        function updateStatusColor(sel) {
+            switch(sel.value) {
+                case 'Buka': 
+                    sel.style.backgroundColor = '#0EDA52'; 
+                    break;
+                case 'Tutup': 
+                    sel.style.backgroundColor = '#EF4444'; 
+                    break;
+                default: 
+                    sel.style.backgroundColor = '#6B7280';
+            }
+            sel.style.color = 'white';
+        }
+
+        // Inisialisasi warna dropdown saat halaman dimuat
+        function initializeDropdownColors() {
+            document.querySelectorAll('.status-dropdown').forEach(sel => {
+                updateStatusColor(sel);
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi warna dropdown
+            initializeDropdownColors();
+
             const table = document.querySelector('#companyTable');
             if (!$.fn.DataTable.isDataTable(table)) {
                 new DataTable(table, {
@@ -263,7 +289,7 @@
                     searching: false,
                     info: false,
                     autoWidth: false,
-                    stripeClasses: [],
+                    stripeClasses: [],
                 });
             }
 
@@ -284,31 +310,47 @@
                 editModal.addClass('hidden');
             });
 
-            // Set warna awal berdasarkan status
-            $('.status-dropdown').each(function() {
-                const status = $(this).val();
-                $(this).css('background-color', status === 'Dibuka' ? '#0EDA52' : '#E82020');
-            });
-
-            // 🟢 Dropdown status lowongan AJAX update
-            $('.status-dropdown').on('change', function() {
-                const id = $(this).data('id');
+            // Handler untuk dropdown status lowongan
+            $(document).on('change', '.status-dropdown', function() {
+                const companyId = $(this).data('id');
+                const newStatus = $(this).val();
                 const dropdown = $(this);
-                var status = dropdown.val()
+                
+                // Update warna terlebih dahulu
+                updateStatusColor(this);
+                
+                // Tampilkan loading state
+                dropdown.prop('disabled', true);
+                dropdown.addClass('opacity-50');
+                
                 $.ajax({
-                    url: `/companies/${id}/update-status`,
+                    url: `/companies/${companyId}/status`,
                     method: 'PUT',
                     data: {
                         _token: '{{ csrf_token() }}',
-                        status_lowongan: status
+                        status_lowongan: newStatus
                     },
-                    success: function() {
-                        // Update warna berdasarkan status baru
-                        dropdown.css('background-color', status === 'Dibuka' ? '#0EDA52' : '#E82020');
-                        alert('Status lowongan berhasil diperbarui!');
+                    success: function(response) {
+                        if (response.success) {
+                            console.log('Status berhasil diupdate');
+                            dropdown.removeClass('border-red-500').addClass('border-green-500');
+                            
+                            setTimeout(() => {
+                                dropdown.removeClass('border-green-500');
+                            }, 2000);
+                        }
                     },
-                    error: function() {
-                        alert('Terjadi kesalahan saat memperbarui status.');
+                    error: function(xhr) {
+                        console.error('Gagal mengupdate status');
+                        dropdown.removeClass('border-green-500').addClass('border-red-500');
+                        
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    },
+                    complete: function() {
+                        dropdown.prop('disabled', false);
+                        dropdown.removeClass('opacity-50');
                     }
                 });
             });
