@@ -49,23 +49,8 @@
                     <td class="px-6 py-4">{{ $vacancy->qualification->pengalaman_kerja ?? '-' }}</td>
                     <td class="px-6 py-4">{{ $vacancy->qualification->skill_teknis ?? '-' }}</td>
                     <td class="px-6 py-4">{{ $vacancy->qualification->skill_non_teknis ?? '-' }}</td>
-                    <td class="px-6 py-4">
-                        <select class="status-vaksinasi-dropdown px-2 py-1 rounded-full text-white text-xs font-medium shadow focus:outline-none" 
-                                onchange="updateVaksinasiColor(this)">
-                            <option value="Lengkap" {{ ($vacancy->qualification->status_vaksinasi ?? '') == 'Lengkap' ? 'selected' : '' }}>Lengkap</option>
-                            <option value="Belum Lengkap" {{ ($vacancy->qualification->status_vaksinasi ?? '') == 'Belum Lengkap' ? 'selected' : '' }}>Belum Lengkap</option>
-                            <option value="Belum Vaksin" {{ ($vacancy->qualification->status_vaksinasi ?? '') == 'Belum Vaksin' ? 'selected' : '' }}>Belum Vaksin</option>
-                            <option value="" {{ empty($vacancy->qualification->status_vaksinasi) ? 'selected' : '' }}>Tidak Ditentukan</option>
-                        </select>
-                    </td>
-                    <td class="px-6 py-4">
-                        <select class="status-pernikahan-dropdown px-2 py-1 rounded-full text-white text-xs font-medium shadow focus:outline-none" 
-                                onchange="updatePernikahanColor(this)">
-                            <option value="Sudah menikah" {{ ($vacancy->qualification->status_pernikahan ?? '') == 'Sudah menikah' ? 'selected' : '' }}>Sudah menikah</option>
-                            <option value="Belum menikah" {{ ($vacancy->qualification->status_pernikahan ?? '') == 'Belum menikah' ? 'selected' : '' }}>Belum menikah</option>
-                            <option value="" {{ empty($vacancy->qualification->status_pernikahan) ? 'selected' : '' }}>Tidak Ditentukan</option>
-                        </select>
-                    </td>
+                    <td class="px-6 py-4">{{ $vacancy->qualification->status_vaksinasi ?? '-' }}</td>
+                    <td class="px-6 py-4">{{ $vacancy->qualification->status_pernikahan ?? '-' }}</td>
                     <td class="px-6 py-4 flex justify-center space-x-4 text-lg">
                         <button class="text-blue-600 hover:scale-110 transition edit-btn" title="Edit"
                          data-id="{{ $vacancy->id }}"
@@ -94,6 +79,11 @@
                                 <i class="fa fa-trash"></i>
                             </button>
                         </form>
+                         <a href="{{ route('vacancies.export', $vacancy->id) }}"
+   title="Export"
+   class="text-blue-500 hover:text-blue-600">
+   <i class="fa fa-download text-lg"></i>
+</a>
                     </td>
                 </tr>
                 @endforeach

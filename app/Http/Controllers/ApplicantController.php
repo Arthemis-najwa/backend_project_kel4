@@ -7,18 +7,23 @@ use App\Models\ApplicantRecommendation;
 use App\Models\Vacancy;
 use Illuminate\Http\Request;
 use App\Models\ApplicantFile;
+use App\Models\Archive;
 use Illuminate\Support\Facades\DB;
+
 
 class ApplicantController extends Controller
 {
 
     public function index()
-    {
-        $title = "Data Pelamar";
-        $applicants = Applicant::with('recommendations.vacancy.company')->get();
+{
+    $title = "Data Pelamar";
 
-        return view('admin.pelamar', compact('applicants', 'title'));
-    }
+    $applicants = Applicant::with('recommendations.vacancy.company')
+        ->whereNull('deleted_at')
+        ->get();
+
+    return view('admin.pelamar', compact('applicants', 'title'));
+}
 
     public function store(Request $request)
     {
@@ -41,22 +46,35 @@ class ApplicantController extends Controller
             'perusahaan_tujuan'   => 'nullable|string',
             'link_dokumen'        => 'nullable|url',
         ]);
-        try{
-        DB::beginTransaction();
-        $applicant = Applicant::create($request->except('_token'));
+       try {
+    DB::beginTransaction();
+
+    $applicant = Applicant::create($request->except('_token'));
+
+    // Cek apakah sudah ada data applicant di tabel
+    if (Applicant::exists()) {
         if ($request->filled('link_dokumen')) {
-        ApplicantFile::create([
-            'applicant_id' => $applicant->id,
-            'link_dokumen' => $request->link_dokumen,
-        ]);
-    }
-        $this->matchVacancies($applicant);
-    DB::commit();
-        return back()->with('success', 'Data pelamar berhasil ditambahkan dan direkomendasikan otomatis!');
-    }catch (\Exception $e) {
+            ApplicantFile::create([
+                'applicant_id' => $applicant->id,
+                'link_dokumen' => $request->link_dokumen,
+            ]);
+        }
+    } else {
         DB::rollBack();
-        return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        return back()->withErrors(['error' => 'Tidak dapat menyimpan file karena belum ada data pelamar.']);
     }
+
+    // Jalankan proses rekomendasi
+    $this->matchVacancies($applicant);
+
+    DB::commit();
+    return back()->with('success', 'Data pelamar berhasil ditambahkan dan direkomendasikan otomatis!');
+
+} catch (\Exception $e) {
+    DB::rollBack();
+    return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+}
+
     }
     public function update(Request $request, $id)
     {
@@ -106,73 +124,118 @@ DB::commit();
     }
 
     protected function matchVacancies(Applicant $applicant)
-    {
-        ApplicantRecommendation::where('applicant_id', $applicant->id)->delete();
+{
+    ApplicantRecommendation::where('applicant_id', $applicant->id)->delete();
+    $vacancies = Vacancy::with(['qualification', 'company'])->get();
 
-        $vacancies = Vacancy::with(['qualification', 'company'])->get();
+    foreach ($vacancies as $vacancy) {
+        $q = $vacancy->qualification;
+        if (!$q) continue;
 
-        foreach ($vacancies as $vacancy) {
-            $q = $vacancy->qualification;
-            if (!$q) continue;
+        $score = 0;
 
-            $score = 0;
+        if ($applicant->usia >= $q->usia_minimum && $applicant->usia <= $q->usia_maksimum) {
+            $score += 1;
+        }
 
-    
-            if ($applicant->usia >= $q->usia_minimum && $applicant->usia <= $q->usia_maksimum) $score += 1;
+        if (
+            empty($q->jenis_kelamin) ||
+            strtolower($q->jenis_kelamin) === 'any' ||
+            strtolower($q->jenis_kelamin) === strtolower($applicant->jenis_kelamin)
+        ) {
+            $score += 1;
+        }
+        if (!empty($q->pendidikan_terakhir) &&
+            strcasecmp($q->pendidikan_terakhir, $applicant->pendidikan_terakhir) === 0) {
+            $score += 1;
+        }
 
-      
-            if (empty($q->jenis_kelamin) || strtolower($q->jenis_kelamin) === 'any' || strtolower($q->jenis_kelamin) === strtolower($applicant->jenis_kelamin)) $score += 1;
+       if (!empty($q->jurusan) && !empty($applicant->jurusan)) {
+    $reqJurusan = array_map('trim', explode(',', strtolower($q->jurusan)));
+    $appJurusan = array_map('trim', explode(',', strtolower($applicant->jurusan)));
 
-            
-            if (!empty($q->pendidikan_terakhir) && strcasecmp($q->pendidikan_terakhir, $applicant->pendidikan_terakhir) === 0) $score += 1;
-
-     
-            if (!empty($q->jurusan) && strcasecmp($q->jurusan, $applicant->jurusan) === 0) $score += 2;
-
-         
-            if (!empty($q->tahun_lulus) && $applicant->tahun_lulus == $q->tahun_lulus) $score += 1;
-
-
-            if (!empty($q->pengalaman_kerja) && !empty($applicant->pengalaman_kerja)) {
-                $expKeywords = explode(' ', strtolower($q->pengalaman_kerja));
-                foreach ($expKeywords as $kw) {
-                    if (strlen($kw) > 3 && stripos(strtolower($applicant->pengalaman_kerja), $kw) !== false) {
-                        $score += 2;
-                        break;
-                    }
-                }
-            }
-
-                if (!empty($q->skill_teknis) && !empty($applicant->skill_teknis)) {
-                $reqSkills = array_map('trim', explode(',', strtolower($q->skill_teknis)));
-                $appSkills = strtolower($applicant->skill_teknis);
-                foreach ($reqSkills as $rs) {
-                    if ($rs !== '' && stripos($appSkills, $rs) !== false) {
-                        $score += 1;
-                        break;
-                    }
-                }
-            }
-
-
-            if (!empty($q->status_vaksinasi) && !empty($applicant->status_vaksinasi) &&
-                strcasecmp($q->status_vaksinasi, $applicant->status_vaksinasi) === 0) {
-                $score += 1;
-            }
-
-    
-            $threshold = 6;
-
-            if ($score >= $threshold) {
-                ApplicantRecommendation::create([
-                    'applicant_id' => $applicant->id,
-                    'vacancy_id'   => $vacancy->id,
-                    'company_id'   => $vacancy->company_id,
-                    'score'        => $score,
-                ]);
+    $matchCount = 0;
+    foreach ($reqJurusan as $rj) {
+        foreach ($appJurusan as $aj) {
+            if ($rj !== '' && stripos($aj, $rj) !== false) {
+                $matchCount++;
             }
         }
     }
+
+    if ($matchCount > 0) {
+        $score += min($matchCount, 3);
+    }
+}
+
+
+        if (!empty($q->tahun_lulus) && $applicant->tahun_lulus == $q->tahun_lulus) {
+            $score += 1;
+        }
+
+        if (!empty($q->pengalaman_kerja) && !empty($applicant->pengalaman_kerja)) {
+            $expKeywords = array_filter(explode(' ', strtolower($q->pengalaman_kerja)));
+            foreach ($expKeywords as $kw) {
+                if (strlen($kw) > 3 && stripos(strtolower($applicant->pengalaman_kerja), $kw) !== false) {
+                    $score += 2;
+                    break;
+                }
+            }
+        }
+
+        if (!empty($q->skill_teknis) && !empty($applicant->skill_teknis)) {
+            $reqSkills = array_map('trim', explode(',', strtolower($q->skill_teknis)));
+            $appSkills = array_map('trim', explode(',', strtolower($applicant->skill_teknis)));
+
+            $matchCount = 0;
+            foreach ($reqSkills as $rs) {
+                foreach ($appSkills as $as) {
+                    if ($rs !== '' && stripos($as, $rs) !== false) {
+                        $matchCount++;
+                    }
+                }
+            }
+
+            if ($matchCount > 0) {
+                $score += min($matchCount, 3); // Maksimal +3 poin dari skill teknis
+            }
+        }
+
+        if (!empty($q->skill_non_teknis) && !empty($applicant->skill_non_teknis)) {
+            $reqSkills = array_map('trim', explode(',', strtolower($q->skill_non_teknis)));
+            $appSkills = array_map('trim', explode(',', strtolower($applicant->skill_non_teknis)));
+
+            $matchCount = 0;
+            foreach ($reqSkills as $rs) {
+                foreach ($appSkills as $as) {
+                    if ($rs !== '' && stripos($as, $rs) !== false) {
+                        $matchCount++;
+                    }
+                }
+            }
+
+            if ($matchCount > 0) {
+                $score += min($matchCount, 3); // Maksimal +3 poin dari skill non-teknis
+            }
+        }
+
+        if (!empty($q->status_vaksinasi) && !empty($applicant->status_vaksinasi) &&
+            strcasecmp($q->status_vaksinasi, $applicant->status_vaksinasi) === 0) {
+            $score += 1;
+        }
+
+        $threshold = 6;
+
+        if ($score >= $threshold) {
+            ApplicantRecommendation::create([
+                'applicant_id' => $applicant->id,
+                'vacancy_id'   => $vacancy->id,
+                'company_id'   => $vacancy->company_id,
+                'score'        => $score,
+            ]);
+        }
+    }
+}
 
   
     public function show($id)
@@ -180,4 +243,52 @@ DB::commit();
         $applicant = Applicant::with(['recommendations.vacancy.company'])->findOrFail($id);
         return view('admin.applicants.show', compact('applicant'));
     }
+    public function updateStatus(Request $request, $id)
+    {
+        $applicant = Applicant::findOrFail($id);
+        $request->validate([
+            'status' => 'required|in:Waiting List,Medical Check Up,Pelatihan,Interview,Diterima,Ditolak',
+        ]);
+        try{
+            DB::beginTransaction();
+        $applicant->status = $request->status;
+        $applicant->save();
+DB::commit();
+        return back()->with('success', 'Status pelamar berhasil diperbarui!');
+        }catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+    } 
+    }
+    public function archive($id)
+{
+    $applicant = Applicant::findOrFail($id);
+
+    // Cek apakah sudah pernah diarsipkan sebelumnya
+    $alreadyArchived = Archive::where('applicant_id', $id)->exists();
+    if ($alreadyArchived) {
+        return response()->json(['message' => 'Pelamar sudah diarsipkan.'], 400);
+    }
+
+    // Simpan ke tabel archives
+    Archive::create([
+        'applicant_id' => $id,
+    ]);
+
+    $applicant->delete();
+
+    return response()->json(['message' => 'Pelamar berhasil diarsipkan!']);
+}
+public function kirim($id)
+{
+    $applicant = Applicant::findOrFail($id);
+    $applicant->terkirim = 1;
+    $applicant->save();
+
+    return response()->json(['message' => 'Pelamar berhasil ditandai']);
+}
+public function export()
+{
+    return Excel::download(new ApplicantsExport, 'data-pelamar.xlsx');
+}
 }

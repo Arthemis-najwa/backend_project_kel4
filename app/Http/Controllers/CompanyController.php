@@ -44,30 +44,47 @@ class CompanyController extends Controller
         $company->delete();
         return redirect()->route('perusahaan')->with('success', 'Data perusahaan berhasil dihapus!');
     }
-
-    public function exportApplicants($id)
+    public function update(Request $request, $id)
 {
     $company = Company::findOrFail($id);
-    $filename = 'applicants_for_' . Str::slug($company->nama_perusahaan) . '.xlsx';
-    return Excel::download(new ApplicantsForCompanyExport($id), $filename);
+     $company->update([
+        'company_id' => $request->company_id,
+        'nama_perusahaan' => $request->nama_perusahaan,
+        'alamat' => $request->alamat,
+        'kontak' => $request->kontak,
+        'bidang_usaha' => $request->bidang_usaha,
+    ]);
 }
-     public function update(Request $request, $id)
-    {
-        $company = Company::findOrFail($id);
-        $request->validate([
-            'nama_perusahaan' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'kontak' => 'required|string',
-            'bidang_usaha' => 'required|string',
-        ]);
-        try{
-        DB::beginTransaction();
-        $company->update($request->all());
-        DB::commit();
-        return redirect()->route('perusahaan')->with('success', 'Data perusahaan berhasil diperbarui!');
-        } catch (\Exception $e) {
-        DB::rollBack();
-        return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+
+    public function updateStatus(Request $request, $id)
+{
+    $company = Company::findOrFail($id);
+    $company->status_lowongan = $request->status_lowongan;
+    $company->save();
+
+   if ($request->status_lowongan === 'Tutup') {
+    foreach ($company->vacancies as $vacancy) {
+        $vacancy->update(['status' => 'disabled']);
+
+        // Tutup semua pelamar yang terkait lowongan ini
+        foreach ($vacancy->applicants as $applicant) {
+            $applicant->update(['status' => 'disabled']);
+        }
     }
+}
+
+if ($request->status_lowongan === 'Buka') {
+    foreach ($company->vacancies as $vacancy) {
+        $vacancy->update(['status' => 'active']);
+
+        foreach ($vacancy->applicants as $applicant) {
+            $applicant->update(['status' => 'active']);
+        }
     }
+}
+
+
+    return response()->json(['success' => true]);
+}
+
 }

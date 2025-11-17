@@ -7,6 +7,8 @@ use App\Models\Company;
 use App\Models\Qualification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Exports\ApplicantsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class VacancyController extends Controller
 {
@@ -93,5 +95,20 @@ DB::commit();
         DB::rollBack();
         return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
     }
+}
+public function export($id)
+{
+    $vacancy = Vacancy::with('company')->findOrFail($id);
+
+    $companyName = $vacancy->company->nama_perusahaan;
+
+    $position = $vacancy->posisi;
+
+    $safeCompany = preg_replace('/[^\w\s-]/', '', $companyName);
+    $safePosition = preg_replace('/[^\w\s-]/', '', $position);
+
+    $fileName = "Data Pelamar - {$safeCompany} - {$safePosition}.xlsx";
+
+    return Excel::download(new ApplicantsExport($id), $fileName);
 }
 }

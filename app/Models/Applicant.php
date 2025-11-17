@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Applicant extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'nama_lengkap',
@@ -25,9 +26,10 @@ class Applicant extends Model
         'skill_teknis',
         'skill_non_teknis',
         'status_vaksinasi',
-        'perusahaan_tujuan'
+        'perusahaan_tujuan',
+         'status'
     ];
-
+ protected $dates = ['deleted_at'];
     public function qualification()
     {
         return $this->hasOne(ApplicantQualification::class);

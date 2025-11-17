@@ -37,6 +37,7 @@
                     <th class="px-6 py-3">Status Vaksinasi</th>
                     <th class="px-6 py-3">Perusahaan Tujuan</th>
                     <th class="px-6 py-3" style="min-width: 200px;">Perusahaan Rekomendasi</th>
+                    <th class="px-6 py-3">Posisi</th>
                     <th class="px-6 py-3">Link Google Drive</th>
                     <th class="px-6 py-3">Status</th>
                     <th class="px-6 py-3 text-center">Aksi</th>
@@ -70,6 +71,7 @@
     @empty
         <span class="text-gray-500 text-sm italic">Tidak ada</span>
     @endforelse
+        <td class="px-6 py-4">{{ $rec->vacancy->posisi }}</td>
 <td class="px-6 py-4">
     @forelse($a->files as $file)
         <a href="{{ $file->link_dokumen }}" target="_blank" class="text-blue-500 hover:underline">
@@ -81,26 +83,59 @@
 </td>
 
 
-        <td class="px-6 py-4">  
-            <select class="status-proses px-2 py-1 rounded-full text-white text-xs font-medium shadow focus:outline-none"> 
-            <option>Waiting List</option> 
-            <option>Medical Check Up</option> 
-            <option>Pelatihan</option> 
-            <option>Interview</option> 
-            <option>Diterima</option> 
-            <option>Ditolak</option> 
-            </select> 
-        </td>
+        <td class="px-6 py-4 text-center">
+    <form action="{{ route('applicants.updateStatus', $a->id) }}" method="POST">
+        @csrf
+        <select name="status"
+                class="status-proses px-2 py-1 rounded-full text-white text-xs font-medium shadow focus:outline-none
+                {{ 
+                    $a->status === 'Waiting List' ? 'bg-gray-500' :
+                    ($a->status === 'Medical Check Up' ? 'bg-blue-500' :
+                    ($a->status === 'Pelatihan' ? 'bg-yellow-500' :
+                    ($a->status === 'Interview' ? 'bg-orange-500' :
+                    ($a->status === 'Diterima' ? 'bg-green-500' : 'bg-red-500'))))
+                }}"
+                onchange="this.form.submit()">
+            <option value="Waiting List" {{ $a->status == 'Waiting List' ? 'selected' : '' }}>Waiting List</option>
+            <option value="Medical Check Up" {{ $a->status == 'Medical Check Up' ? 'selected' : '' }}>Medical Check Up</option>
+            <option value="Pelatihan" {{ $a->status == 'Pelatihan' ? 'selected' : '' }}>Pelatihan</option>
+            <option value="Interview" {{ $a->status == 'Interview' ? 'selected' : '' }}>Interview</option>
+            <option value="Diterima" {{ $a->status == 'Diterima' ? 'selected' : '' }}>Diterima</option>
+            <option value="Ditolak" {{ $a->status == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
+        </select>
+    </form>
+</td>
         <td class="px-6 py-4 flex justify-center space-x-4 text-lg"> 
-            <button class="text-blue-600 hover:scale-110 transition" title="Edit" onclick="openEditModal(this)"> 
+            <button class="text-blue-600 hover:scale-110 transition edit-btn" title="Edit"
+            data-id="{{ $a->id }}"
+                                    data-nama="{{ $a->nama_lengkap }}"
+                                    data-tanggal_lahir="{{ $a->tanggal_lahir }}"
+                                    data-usia="{{ $a->usia }}"
+                                    data-jenis_kelamin="{{ $a->jenis_kelamin }}"
+                                    data-status_pernikahan="{{ $a->status_pernikahan }}"
+                                    data-alamat="{{ $a->alamat }}"
+                                    data-no_telp="{{ $a->no_telp }}"
+                                    data-email="{{ $a->email }}"
+                                    data-pendidikan_terakhir="{{ $a->pendidikan_terakhir }}"
+                                    data-jurusan="{{ $a->jurusan }}"
+                                    data-tahun_lulus="{{ $a->tahun_lulus }}"
+                                    data-pengalaman_kerja="{{ $a->pengalaman_kerja }}"
+                                    data-skill_teknis="{{ $a->skill_teknis }}"
+                                    data-skill_non_teknis="{{ $a->skill_non_teknis }}"
+                                    data-status_vaksinasi="{{ $a->status_vaksinasi }}"
+                                    data-perusahaan_tujuan="{{ $a->perusahaan_tujuan }}"
+                                    data-link_dokumen="{{ $file->link_dokumen }}">
                 <i class="fa fa-pen"></i> 
             </button> 
-            <button class="text-green-600 hover:scale-110 transition" title="Arsipkan"> 
+            <button class="text-green-600 hover:scale-110 transition archive-btn" title="Arsipkan"
+            data-id="{{ $a->id }}"> 
                 <i class="fa fa-download"></i> 
             </button> 
-            <button class="text-yellow-500 hover:scale-110 transition" title="Kirim"> 
-                <i class="fa fa-paper-plane"></i> 
-            </button> 
+            <button class="text-yellow-500 hover:scale-110 transition kirim-btn" 
+    title="Kirim"
+    data-id="{{ $a->id }}">
+    <i class="fa fa-paper-plane"></i>
+</button> 
            <form action="{{ route('applicants.destroy', $a->id) }}" method="POST"
                                     onsubmit="return confirm('Hapus data ini?')" class="inline">
                                     @csrf
@@ -459,6 +494,7 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // Modal Tambah
     const tambahModal = document.getElementById("tambahModal");
@@ -469,33 +505,39 @@
     [closeTambahBtn, closeTambahBtn2].forEach(btn => btn.addEventListener("click", () => tambahModal.classList.add("hidden")));
 
     // Modal Edit
-    function openEditModal(data) {
-    document.getElementById("editNamaLengkap").value = data.nama_lengkap;
-    document.getElementById("editTanggalLahir").value = data.tanggal_lahir;
-    document.getElementById("editUsia").value = data.usia;
-    document.getElementById("editJenisKelamin").value = data.jenis_kelamin;
-    document.getElementById("editStatusPernikahan").value = data.status_pernikahan;
-    document.getElementById("editAlamat").value = data.alamat;
-    document.getElementById("editNoTelepon").value = data.no_telp;
-    document.getElementById("editEmail").value = data.email;
-    document.getElementById("editPendidikanTerakhir").value = data.pendidikan_terakhir;
-    document.getElementById("editJurusan").value = data.jurusan;
-    document.getElementById("editTahunLulus").value = data.tahun_lulus;
-    document.getElementById("editPengalamanKerja").value = data.pengalaman_kerja;
-    document.getElementById("editSkillTeknis").value = data.skill_teknis;
-    document.getElementById("editSkillNonTeknis").value = data.skill_non_teknis;
-    document.getElementById("editPerusahaanTujuan").value = data.perusahaan_tujuan;
+    const editModal = $('#editModal');
+    const editForm = $('#editForm');
+    $(document).on('click', '.edit-btn', function () {
+    const id = $(this).data('id');
+    $('#editNamaLengkap').val($(this).data('nama'));
+    $('#editTanggalLahir').val($(this).data('tanggal_lahir'));
+    $('#editUsia').val($(this).data('usia'));
+    $('#editJenisKelamin').val($(this).data('jenis_kelamin'));
+    $('#editStatusPernikahan').val($(this).data('status_pernikahan'));
+    $('#editAlamat').val($(this).data('alamat'));
+    $('#editNoTelepon').val($(this).data('no_telp'));
+    $('#editEmail').val($(this).data('email'));
+    $('#editPendidikanTerakhir').val($(this).data('pendidikan_terakhir'));
+    $('#editJurusan').val($(this).data('jurusan'));
+    $('#editTahunLulus').val($(this).data('tahun_lulus'));
+    $('#editPengalamanKerja').val($(this).data('pengalaman_kerja'));
+    $('#editSkillTeknis').val($(this).data('skill_teknis'));
+    $('#editSkillNonTeknis').val($(this).data('skill_non_teknis'));
+    $('#editVaksin').val($(this).data('status_vaksinasi'));
+    $('#editPerusahaanTujuan').val($(this).data('perusahaan_tujuan'));
+    $('#editLinkDokumen').val($(this).data('link_dokumen'));
 
-    // set form action
-    document.getElementById('editForm').action = `/applicants/${data.id}`;
+    // perbaikan action
+    $('#editForm').attr('action', `/applicants/${id}`);
 
-    editModal.classList.remove("hidden");
-    
-}
+    // tampilkan modal
+    $('#editModal').removeClass('hidden');
+});
+
 function closeEditModal() {
-    const modal = document.getElementById('editModal');
-    modal.classList.add('hidden');
+    $('#editModal').addClass('hidden');
 }
+
 
     // Dropdown warna
     function updateVaksinColor(sel){
@@ -526,5 +568,41 @@ function closeEditModal() {
         updateStatusColor(sel);
         sel.addEventListener('change',()=>updateStatusColor(sel));
     });
+    $(document).on('click', '.archive-btn', function () {
+    const applicantId = $(this).data('id');
+
+    if (confirm('Apakah kamu yakin ingin mengarsipkan pelamar ini?')) {
+        $.ajax({
+            url: `/applicants/${applicantId}/archive`,
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+            },
+            success: function (response) {
+                alert(response.message);
+                location.reload(); 
+            },
+            error: function (xhr) {
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    alert(xhr.responseJSON.message);
+                } else {
+                    alert('Terjadi kesalahan saat mengarsipkan.');
+                }
+            }
+        });
+    }
+});
+$(document).on('click', '.kirim-btn', function () {
+    const id = $(this).data('id');
+
+    if (!confirm("Kirim pelamar ini untuk diexport?")) return;
+
+    $.post(`/applicants/${id}/kirim`, {
+        _token: '{{ csrf_token() }}'
+    }, function () {
+        alert('Pelamar berhasil ditandai untuk diexport!');
+        location.reload();
+    });
+});
 </script>
 @endsection

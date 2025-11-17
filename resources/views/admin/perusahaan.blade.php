@@ -52,8 +52,8 @@
                             <!-- Aksi -->
                             <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
                                 <!-- Edit -->
-                                <button type="button" title="Edit"
-                                    class="text-orange-500 hover:text-orange-600 edit-btn"
+                                                                    <button type="button" title="Edit"
+class="text-orange-500 hover:text-orange-600 edit-btn"
                                     data-id="{{ $company->id }}"
                                     data-nama="{{ $company->nama_perusahaan }}"
                                     data-bidang="{{ $company->bidang_usaha }}"
@@ -72,12 +72,6 @@
                                         <i class="fa fa-trash text-lg"></i>
                                     </button>
                                 </form>
-
-                                <!-- Export -->
-                                <a href="{{ route('companies.export', $company->id) }}" title="Export"
-                                    class="text-blue-500 hover:text-blue-600">
-                                    <i class="fa fa-download text-lg"></i>
-                                </a>
                             </td>
                         </tr>
                     @empty
