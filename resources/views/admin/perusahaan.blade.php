@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
 @section('content')
-    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Pendataan Perusahaan Yang Bekerja Sama</h1>
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Data Perusahaan</h1>
 
     <!-- Tabel Perusahaan -->
     <div class="bg-white rounded-2xl shadow-md p-6 mt-6 border border-gray-200">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold text-gray-800">Menampilkan Semua Data Perusahaan</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Daftar Perusahaan</h2>
             <div>
                 <button data-modal-target="tambahPerusahaanModal" data-modal-toggle="tambahPerusahaanModal"
                     class="px-4 py-3 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition">
@@ -34,10 +34,10 @@
                     @forelse ($companies as $index => $company)
                         <tr class="bg-white border-b hover:bg-gray-50 transition">
                             <td class="px-6 py-4 text-center">{{ $index + 1 }}</td>
-                            <td class="px-6 py-4 font-medium text-gray-900">{{ $company->nama_perusahaan }}</td>
-                            <td class="px-6 py-4">{{ $company->bidang_usaha }}</td>
+                            <td class="px-6 py-4 font-medium text-gray-900" style="min-width: 260px;">{{ $company->nama_perusahaan }}</td>
+                            <td class="px-6 py-4" style="min-width: 260px;">{{ $company->bidang_usaha }}</td>
                             <td class="px-6 py-4">{{ $company->kontak }}</td>
-                            <td class="px-6 py-4">{{ $company->alamat }}</td>
+                            <td class="px-6 py-4" style="min-width: 260px;">{{ $company->alamat }}</td>
 
                             <!-- Status Lowongan dengan Dropdown -->
                             <td class="px-6 py-4 text-center">
@@ -50,7 +50,8 @@
                             </td>
 
                             <!-- Aksi -->
-                            <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                            <td class="px-6 py-4">
+    <div class="flex justify-center items-center space-x-4 text-lg h-full">
                                 <!-- Edit -->
                                                                     <button type="button" title="Edit"
 class="text-orange-500 hover:text-orange-600 edit-btn"
@@ -72,6 +73,7 @@ class="text-orange-500 hover:text-orange-600 edit-btn"
                                         <i class="fa fa-trash text-lg"></i>
                                     </button>
                                 </form>
+</div>
                             </td>
                         </tr>
                     @empty

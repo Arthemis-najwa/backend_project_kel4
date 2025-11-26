@@ -13,7 +13,6 @@ class ApplicantFile extends Model
 
     protected $fillable = [
         'applicant_id',
-        'file_path',
         'link_dokumen',
     ];
 

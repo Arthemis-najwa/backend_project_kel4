@@ -38,17 +38,19 @@
     <td class="px-6 py-3">{{ $archive->applicant->jenis_kelamin ?? '-' }}</td>
     <td class="px-6 py-3">{{ $archive->applicant->pendidikan_terakhir ?? '-' }}</td>
     <td class="px-6 py-3">{{ $archive->applicant->jurusan ?? '-' }}</td>
-    <td class="px-6 py-3">{{ $archive->applicant->skill_teknis ?? '-' }}</td>
-    <td class="px-6 py-3">{{ $archive->applicant->skill_non_teknis ?? '-' }}</td>
+    <td class="px-6 py-3" style="min-width: 260px;">{{ $archive->applicant->skill_teknis ?? '-' }}</td>
+    <td class="px-6 py-3" style="min-width: 260px;">{{ $archive->applicant->skill_non_teknis ?? '-' }}</td>
     <td class="px-6 py-3">{{ $archive->applicant->status_vaksinasi ?? '-' }}</td>
-    <td class="px-6 py-3">{{ $archive->applicant->perusahaan_tujuan ?? '-' }}</td>
-     <td class="px-6 py-4 flex justify-center space-x-4 text-lg">
+    <td class="px-6 py-3" style="min-width: 260px;">{{ $archive->applicant->perusahaan_tujuan ?? '-' }}</td>
+    <td class="px-6 py-4">
+    <div class="flex justify-center items-center space-x-4 text-lg h-full"> 
                         <button class="text-green-600 hover:scale-110 transition restore-btn" title="Restore" data-id="{{ $archive->applicant_id }}">
                             <i class="fa fa-rotate-left"></i>
                         </button>
                         <button class="text-red-500 hover:scale-110 transition delete-btn" title="Hapus" data-id="{{ $archive->applicant_id }}">
                             <i class="fa fa-trash"></i>
                         </button>
+    </div>
     </td>
 </tr>
 @endforeach

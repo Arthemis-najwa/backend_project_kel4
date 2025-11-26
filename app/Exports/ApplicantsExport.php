@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Applicant;
+use App\Models\ApplicantFile;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -61,8 +62,8 @@ class ApplicantsExport implements
             'Perusahaan Tujuan',
             'Lowongan Direkomendasikan',
             'Perusahaan',
-            'Status Rekomendasi',
             'Tanggal Daftar',
+            'Link Dokumen',
         ];
     }
 
@@ -73,6 +74,9 @@ class ApplicantsExport implements
         $recommendation = $applicant->recommendations
             ->where('vacancy_id', $this->vacancyId)
             ->first();
+        $file = \App\Models\ApplicantFile::where('applicant_id', $applicant->id)->first();
+        $linkDokumen = $file ? '=HYPERLINK("' . $file->link_dokumen . '", "Lihat Dokumen")': '-';
+
 
         return [
             $this->rowNumber,
@@ -94,14 +98,13 @@ class ApplicantsExport implements
             $applicant->perusahaan_tujuan,
             $recommendation->vacancy->posisi ?? '-',
             $recommendation->vacancy->company->nama_perusahaan ?? '-',
-            $recommendation->status ?? '-',
             $applicant->created_at->format('Y-m-d'),
+        $linkDokumen,
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        // header bold + background
         $sheet->getStyle('A1:U1')->applyFromArray([
             'font' => [
                 'bold' => true,
@@ -137,10 +140,8 @@ class ApplicantsExport implements
                     ]
                 ]);
 
-                // Filter Excel otomatis
                 $sheet->setAutoFilter("A1:U1");
 
-                // Auto size column
                 foreach (range('A','U') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }

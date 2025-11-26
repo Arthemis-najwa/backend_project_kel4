@@ -75,6 +75,6 @@ Route::get('/arsip-data-pelamar', [ArchiveController::class, 'index'])->name('ar
 Route::post('/archives/{id}/restore', [ArchiveController::class, 'restore'])->name('arsip-data-pelamar.restore');
 Route::delete('/archives/{id}/hapus', [ArchiveController::class, 'destroy'])->name('arsip-data-pelamar.destroy');
 
+// Export & Kirim
 Route::post('applicants/{id}/kirim', [ApplicantController::class, 'kirim'])->name('applicants.kirim');
-
 Route::get('vacancies/{id}/export', [VacancyController::class, 'export'])->name('vacancies.export');

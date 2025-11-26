@@ -17,16 +17,13 @@ class ArchiveController extends Controller
 
     public function restore($id)
     {
-        // $id adalah applicant_id
         $applicant = Applicant::withTrashed()->find($id);
         if (! $applicant) {
             return response()->json(['message' => 'Applicant tidak ditemukan.'], 404);
         }
 
-        // restore applicant (so it appears again in applicants table)
         $applicant->restore();
 
-        // hapus baris archives yg berhubungan
         Archive::where('applicant_id', $id)->delete();
 
         return response()->json(['message' => 'Pelamar berhasil dipulihkan!'], 200);
@@ -34,16 +31,15 @@ class ArchiveController extends Controller
 
     public function destroy($id)
     {
-        // $id adalah applicant_id
+    
         $applicant = Applicant::withTrashed()->find($id);
         if (! $applicant) {
             return response()->json(['message' => 'Applicant tidak ditemukan.'], 404);
         }
 
-        // hapus permanen pelamar
         $applicant->forceDelete();
 
-        // hapus record archive
+
         Archive::where('applicant_id', $id)->delete();
 
         return response()->json(['message' => 'Data pelamar berhasil dihapus permanen!'], 200);

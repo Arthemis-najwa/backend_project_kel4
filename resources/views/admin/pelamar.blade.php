@@ -59,19 +59,30 @@
         <td class="px-6 py-4">{{ $a->jurusan }}</td>
         <td class="px-6 py-4">{{ $a->tahun_lulus }}</td>
         <td class="px-6 py-4">{{ $a->pengalaman_kerja }}</td>
-        <td class="px-6 py-4">{{ $a->skill_teknis }}</td>
-        <td class="px-6 py-4">{{ $a->skill_non_teknis }}</td>
+        <td class="px-6 py-4" style="min-width: 260px;">{{ $a->skill_teknis }}</td>
+        <td class="px-6 py-4"  style="min-width: 260px;">{{ $a->skill_non_teknis }}</td>
         <td class="px-6 py-4">{{ $a->status_vaksinasi }}</td>
         <td class="px-6 py-4">{{ $a->perusahaan_tujuan }}</td>
-        <td class="px-6 py-4">
+        <td class="px-6 py-4" style="min-width: 260px;">
     @forelse($a->recommendations as $rec)
-        <span class="px-2 py-1 bg-green-200 rounded">
+        <span class="px-2 py-1 bg-green-200 rounded block mb-1">
             {{ $rec->company->nama_perusahaan }}
-        </span><br>
+        </span>
     @empty
         <span class="text-gray-500 text-sm italic">Tidak ada</span>
     @endforelse
-        <td class="px-6 py-4">{{ $rec->vacancy->posisi }}</td>
+</td>
+
+<td class="px-6 py-4" style="min-width: 200px;">
+    @forelse($a->recommendations as $rec)
+        <span class="px-2 py-1 bg-blue-200 rounded block mb-1">
+            {{ $rec->vacancy->posisi }}
+        </span>
+    @empty
+        <span class="text-gray-500 text-sm italic">Tidak ada</span>
+    @endforelse
+</td>
+
 <td class="px-6 py-4">
     @forelse($a->files as $file)
         <a href="{{ $file->link_dokumen }}" target="_blank" class="text-blue-500 hover:underline">
@@ -105,7 +116,8 @@
         </select>
     </form>
 </td>
-        <td class="px-6 py-4 flex justify-center space-x-4 text-lg"> 
+        <td class="px-6 py-4">
+    <div class="flex justify-center items-center space-x-4 text-lg h-full"> 
             <button class="text-blue-600 hover:scale-110 transition edit-btn" title="Edit"
             data-id="{{ $a->id }}"
                                     data-nama="{{ $a->nama_lengkap }}"
@@ -145,6 +157,7 @@
                                         <i class="fa fa-trash text-lg"></i>
                                     </button>
             </form> 
+            </div>
         </td>
     </tr>
     @endforeach

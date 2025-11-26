@@ -38,20 +38,21 @@
                 @foreach ($vacancies as $vacancy)
                 <tr class="bg-white border-b hover:bg-green-50">
                     <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                    <td class="px-6 py-4 font-semibold">{{ $vacancy->company->nama_perusahaan ?? '-' }}</td>
+                    <td class="px-6 py-4 font-semibold" style="min-width: 260px;">{{ $vacancy->company->nama_perusahaan ?? '-' }}</td>
                     <td class="px-6 py-4">{{ $vacancy->posisi }}</td>
                     <td class="px-6 py-4">{{ $vacancy->qualification->usia_minimum ?? '-' }}</td>
                     <td class="px-6 py-4">{{ $vacancy->qualification->usia_maksimum ?? '-' }}</td>
                     <td class="px-6 py-4">{{ $vacancy->qualification->jenis_kelamin ?? '-' }}</td>
                     <td class="px-6 py-4">{{ $vacancy->qualification->pendidikan_terakhir ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->jurusan ?? '-' }}</td>
+                    <td class="px-6 py-4" style="min-width: 260px;">{{ $vacancy->qualification->jurusan ?? '-' }}</td>
                     <td class="px-6 py-4">{{ $vacancy->qualification->tahun_lulus ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->pengalaman_kerja ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->skill_teknis ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $vacancy->qualification->skill_non_teknis ?? '-' }}</td>
+                    <td class="px-6 py-4" style="min-width: 260px;">{{ $vacancy->qualification->pengalaman_kerja ?? '-' }}</td>
+                    <td class="px-6 py-4" style="min-width: 260px;">{{ $vacancy->qualification->skill_teknis ?? '-' }}</td>
+                    <td class="px-6 py-4" style="min-width: 260px;">{{ $vacancy->qualification->skill_non_teknis ?? '-' }}</td>
                     <td class="px-6 py-4">{{ $vacancy->qualification->status_vaksinasi ?? '-' }}</td>
                     <td class="px-6 py-4">{{ $vacancy->qualification->status_pernikahan ?? '-' }}</td>
-                    <td class="px-6 py-4 flex justify-center space-x-4 text-lg">
+                    <td class="px-6 py-4">
+    <div class="flex justify-center items-center space-x-4 text-lg h-full">
                         <button class="text-blue-600 hover:scale-110 transition edit-btn" title="Edit"
                          data-id="{{ $vacancy->id }}"
                          data-perusahaan="{{ $vacancy->company_id }}"
@@ -84,6 +85,7 @@
    class="text-blue-500 hover:text-blue-600">
    <i class="fa fa-download text-lg"></i>
 </a>
+</div>
                     </td>
                 </tr>
                 @endforeach
@@ -135,6 +137,7 @@
                         <option value="">-- Pilih Jenis Kelamin --</option>
                         <option value="Laki-laki">Laki-laki</option>
                         <option value="Perempuan">Perempuan</option>
+                        <option value="Tidak Ditentukan">Tidak ditentukan</option>
                     </select>
                     <input type="text" name="pendidikan_terakhir" placeholder="Pendidikan Terakhir"
                         class="{{ $inputClasses }}">
@@ -254,7 +257,6 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Modal Tambah
     const tambahModal = document.getElementById("tambahModal");
     const openTambahBtn = document.getElementById("openTambahBtn");
     const closeTambahBtn = document.getElementById("closeTambahBtn");
@@ -273,7 +275,6 @@
         alert('Hapus dummy');
     }
 
-    // Fungsi untuk update warna dropdown status vaksinasi
     function updateVaksinasiColor(sel) {
         switch(sel.value) {
             case 'Lengkap': 
@@ -291,7 +292,6 @@
         sel.style.color = 'white';
     }
 
-    // Fungsi untuk update warna dropdown status pernikahan
     function updatePernikahanColor(sel) {
         switch(sel.value) {
             case 'Sudah menikah': 
@@ -306,15 +306,13 @@
         sel.style.color = 'white';
     }
 
-    // Inisialisasi warna dropdown saat halaman dimuat
+    
     document.addEventListener('DOMContentLoaded', function() {
-        // Status vaksinasi
         document.querySelectorAll('.status-vaksinasi-dropdown').forEach(sel => {
             updateVaksinasiColor(sel);
             sel.addEventListener('change', () => updateVaksinasiColor(sel));
         });
 
-        // Status pernikahan
         document.querySelectorAll('.status-pernikahan-dropdown').forEach(sel => {
             updatePernikahanColor(sel);
             sel.addEventListener('change', () => updatePernikahanColor(sel));

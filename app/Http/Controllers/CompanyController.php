@@ -54,6 +54,7 @@ class CompanyController extends Controller
         'kontak' => $request->kontak,
         'bidang_usaha' => $request->bidang_usaha,
     ]);
+     return redirect()->back()->with('success', 'Perusahaan berhasil diupdate!');
 }
 
     public function updateStatus(Request $request, $id)
@@ -66,7 +67,6 @@ class CompanyController extends Controller
     foreach ($company->vacancies as $vacancy) {
         $vacancy->update(['status' => 'disabled']);
 
-        // Tutup semua pelamar yang terkait lowongan ini
         foreach ($vacancy->applicants as $applicant) {
             $applicant->update(['status' => 'disabled']);
         }

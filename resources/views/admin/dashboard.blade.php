@@ -215,9 +215,7 @@
     </div>
 
     <script>
-        // Fungsi untuk mengatur warna berdasarkan teks pada span
         function setColorBasedOnText() {
-            // Untuk Status Vaksinasi
             document.querySelectorAll('.status-vaksinasi').forEach(span => {
                 const text = span.textContent.trim();
                 switch(text) {
@@ -284,7 +282,6 @@
             });
         }
 
-        // Jalankan fungsi saat halaman dimuat
         document.addEventListener('DOMContentLoaded', setColorBasedOnText);
     </script>
 @endsection

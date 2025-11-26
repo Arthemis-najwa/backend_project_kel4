@@ -34,7 +34,7 @@ class ApplicantController extends Controller
             'jenis_kelamin'       => 'required|string|max:1',
             'status_pernikahan'   => 'required|string|max:255',
             'alamat'              => 'required|string|max:255',
-            'no_telp'             => 'required|string|max:20',
+            'no_telp'             => 'required|string|max:13',
             'email'               => 'required|email',
             'pendidikan_terakhir' => 'required|string|max:255',
             'jurusan'             => 'required|string|max:255',
@@ -46,9 +46,6 @@ class ApplicantController extends Controller
             'perusahaan_tujuan'   => 'nullable|string',
             'link_dokumen'        => 'nullable|url',
         ]);
-       try {
-    DB::beginTransaction();
-
     $applicant = Applicant::create($request->except('_token'));
 
     // Cek apakah sudah ada data applicant di tabel
@@ -60,20 +57,11 @@ class ApplicantController extends Controller
             ]);
         }
     } else {
-        DB::rollBack();
         return back()->withErrors(['error' => 'Tidak dapat menyimpan file karena belum ada data pelamar.']);
     }
 
-    // Jalankan proses rekomendasi
     $this->matchVacancies($applicant);
-
-    DB::commit();
     return back()->with('success', 'Data pelamar berhasil ditambahkan dan direkomendasikan otomatis!');
-
-} catch (\Exception $e) {
-    DB::rollBack();
-    return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
-}
 
     }
     public function update(Request $request, $id)
@@ -87,7 +75,7 @@ class ApplicantController extends Controller
             'jenis_kelamin'       => 'required|string|max:1',
             'status_pernikahan'   => 'required|string|max:255',
             'alamat'              => 'required|string|max:255',
-            'no_telp'             => 'required|string|max:20',
+            'no_telp'             => 'required|string|max:13',
             'email'               => 'required|email|unique:applicants,email,' . $applicant->id,
             'pendidikan_terakhir' => 'required|string|max:255',
             'jurusan'             => 'required|string|max:255',
@@ -115,14 +103,28 @@ DB::commit();
     public function destroy($id)
     {
         $applicant = Applicant::findOrFail($id);
-
-        ApplicantRecommendation::where('applicant_id', $id)->delete();
-
         $applicant->delete();
-
+        ApplicantRecommendation::where('applicant_id', $id)->delete();
+    
         return back()->with('success', 'Data pelamar dan rekomendasinya berhasil dihapus!');
     }
-
+protected function getEducationLevel($pendidikan)
+{
+    $levels = [
+        'SD' => 1,
+        'SMP' => 2,
+        'SMA' => 3,
+        'SMK' => 4,
+        'D1' => 5,
+        'D2' => 6,
+        'D3' => 7,
+        'S1' => 8,
+        'S2' => 9,
+        'S3' => 10,
+    ];
+    $pendidikan = strtoupper(trim($pendidikan));
+    return $levels[$pendidikan] ?? 0;
+}
     protected function matchVacancies(Applicant $applicant)
 {
     ApplicantRecommendation::where('applicant_id', $applicant->id)->delete();
@@ -145,9 +147,10 @@ DB::commit();
         ) {
             $score += 1;
         }
-        if (!empty($q->pendidikan_terakhir) &&
-            strcasecmp($q->pendidikan_terakhir, $applicant->pendidikan_terakhir) === 0) {
-            $score += 1;
+        if (!empty($q->pendidikan_terakhir) && !empty($applicant->pendidikan_terakhir)) {
+            if (strcasecmp(trim($q->pendidikan_terakhir), trim($applicant->pendidikan_terakhir)) === 0) {
+                $score += 1;
+            }
         }
 
        if (!empty($q->jurusan) && !empty($applicant->jurusan)) {
@@ -169,7 +172,7 @@ DB::commit();
 }
 
 
-        if (!empty($q->tahun_lulus) && $applicant->tahun_lulus == $q->tahun_lulus) {
+        if (!empty($q->tahun_lulus) && $applicant->tahun_lulus >= $q->tahun_lulus) {
             $score += 1;
         }
 
@@ -197,7 +200,7 @@ DB::commit();
             }
 
             if ($matchCount > 0) {
-                $score += min($matchCount, 3); // Maksimal +3 poin dari skill teknis
+                $score += min($matchCount, 3); 
             }
         }
 
@@ -215,7 +218,7 @@ DB::commit();
             }
 
             if ($matchCount > 0) {
-                $score += min($matchCount, 3); // Maksimal +3 poin dari skill non-teknis
+                $score += min($matchCount, 3); 
             }
         }
 
