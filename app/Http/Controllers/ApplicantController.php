@@ -263,24 +263,78 @@ DB::commit();
         return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
     } 
     }
-    public function archive($id)
+public function archive($id)
 {
-    $applicant = Applicant::findOrFail($id);
-
-    // Cek apakah sudah pernah diarsipkan sebelumnya
-    $alreadyArchived = Archive::where('applicant_id', $id)->exists();
-    if ($alreadyArchived) {
-        return response()->json(['message' => 'Pelamar sudah diarsipkan.'], 400);
+    try {
+        $applicant = Applicant::findOrFail($id);
+        
+        // Soft delete
+        $applicant->delete();
+        
+        // Buat record di tabel archives
+        \DB::table('archives')->insert([
+            'applicant_id' => $id,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+        ], 500);
     }
+}
 
-    // Simpan ke tabel archives
-    Archive::create([
-        'applicant_id' => $id,
-    ]);
+// Method untuk restore
+public function restore($id)
+{
+    try {
+        $applicant = Applicant::withTrashed()->findOrFail($id);
+        $applicant->restore();
+        
+        // Hapus record dari tabel archives
+        \DB::table('archives')->where('applicant_id', $id)->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Pelamar berhasil dipulihkan.'
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+        ], 500);
+    }
+}
 
-    $applicant->delete();
-
-    return response()->json(['message' => 'Pelamar berhasil diarsipkan!']);
+// Method untuk hapus permanen (hard delete)
+public function permanentDelete($id)
+{
+    try {
+        $applicant = Applicant::withTrashed()->findOrFail($id);
+        
+        // Hapus applicant_recommendations terlebih dahulu
+        \DB::table('applicant_recommendations')
+            ->where('applicant_id', $id)
+            ->delete();
+        
+        // Hapus dari archives
+        \DB::table('archives')->where('applicant_id', $id)->delete();
+        
+        // Hapus permanen
+        $applicant->forceDelete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Pelamar berhasil dihapus permanen.'
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+        ], 500);
+    }
 }
 public function kirim($id)
 {

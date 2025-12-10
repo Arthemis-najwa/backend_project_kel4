@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-<h1 class="text-2xl font-semibold text-gray-800 mb-6">{{ $title }}</h1>
 
 <!-- CARD TABEL -->
 <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
@@ -72,11 +71,12 @@
                             <i class="fa fa-pen"></i>
                         </button>
                         <form action="{{ route('vacancies.destroy', $vacancy->id) }}" method="POST"
-                            onsubmit="return confirm('Hapus data ini?')" class="inline">
+                            class="inline delete-vacancy-form" data-id="{{ $vacancy->id }}">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" title="Hapus"
-                                class="text-red-500 hover:text-red-600 hover:scale-110 transition">
+                            <button type="button" title="Hapus"
+                                class="text-red-500 hover:text-red-600 hover:scale-110 transition delete-vacancy-btn"
+                                data-id="{{ $vacancy->id }}">
                                 <i class="fa fa-trash"></i>
                             </button>
                         </form>
@@ -256,6 +256,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     const tambahModal = document.getElementById("tambahModal");
     const openTambahBtn = document.getElementById("openTambahBtn");
@@ -345,6 +346,72 @@
         $(document).on('click', '#closeEditBtn, #closeEditBtn2', function () {
             editModal.fadeOut(200, function () {
                 editModal.addClass('hidden');
+            });
+        });
+
+        // Handler untuk tombol hapus lowongan dengan SweetAlert
+        $(document).on('click', '.delete-vacancy-btn', function(e) {
+            e.preventDefault();
+            const vacancyId = $(this).data('id');
+            const form = $(`.delete-vacancy-form[data-id="${vacancyId}"]`);
+            
+            Swal.fire({
+                icon: 'warning',
+                title: 'Hapus Lowongan?',
+                html: '⚠️ Pastikan Anda telah <b>mengarsipkan semua pelamar</b> yang melamar untuk posisi ini.<br><br>Data yang dihapus tidak dapat dipulihkan.',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: form.attr('action'),
+                        method: 'POST',
+                        data: form.serialize(),
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: response.message,
+                                    confirmButtonColor: '#10b981',
+                                    allowOutsideClick: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            const response = xhr.responseJSON;
+                            let errorDetails = '';
+                            
+                            if (response.applicants && response.applicants.length > 0) {
+                                errorDetails += `<p class="text-left mt-3"><b>👤 Pelamar yang masih terdaftar:</b></p>
+                                               <ul class="text-left ml-4 mt-2">`;
+                                response.applicants.forEach(applicant => {
+                                    errorDetails += `<li class="text-sm text-gray-700">• ${applicant.nama_lengkap}</li>`;
+                                });
+                                errorDetails += `</ul>`;
+                            }
+                            
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Penghapusan Gagal!',
+                                html: response.message + errorDetails,
+                                confirmButtonText: 'Oke',
+                                confirmButtonColor: '#ef4444',
+                                allowOutsideClick: false,
+                                didOpen: function() {
+                                    const popup = Swal.getPopup();
+                                    popup.style.maxWidth = '500px';
+                                }
+                            });
+                        }
+                    });
+                }
             });
         });
     });

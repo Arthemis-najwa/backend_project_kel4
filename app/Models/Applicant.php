@@ -35,10 +35,10 @@ class Applicant extends Model
         return $this->hasOne(ApplicantQualification::class);
     }
 
-    public function recommendations()
-    {
-        return $this->hasMany(ApplicantRecommendation::class);
-    }
+   public function recommendations()
+{
+    return $this->hasMany(ApplicantRecommendation::class);
+}
     public function files()
 {
     return $this->hasMany(ApplicantFile::class);

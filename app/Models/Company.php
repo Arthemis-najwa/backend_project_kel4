@@ -19,8 +19,9 @@ class Company extends Model
 ];
 
 
-    public function vacancies()
+   public function vacancies()
 {
     return $this->hasMany(Vacancy::class);
 }
+
 }

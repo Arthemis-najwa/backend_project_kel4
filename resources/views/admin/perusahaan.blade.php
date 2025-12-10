@@ -1,8 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Data Perusahaan</h1>
-
     <!-- Tabel Perusahaan -->
     <div class="bg-white rounded-2xl shadow-md p-6 mt-6 border border-gray-200">
         <div class="flex justify-between items-center mb-6">
@@ -14,10 +12,9 @@
                 </button>
             </div>
         </div>
-
         <!-- Tabel -->
         <div class="relative overflow-x-auto rounded-xl">
-            <table id="companyTable"
+            <table id="myTable"
                 class="w-full text-sm text-left text-gray-700 border border-gray-200 rounded-xl overflow-hidden">
                 <thead class="bg-green-500 text-white uppercase text-xs">
                     <tr>
@@ -65,11 +62,13 @@ class="text-orange-500 hover:text-orange-600 edit-btn"
 
                                 <!-- Hapus -->
                                 <form action="{{ route('companies.destroy', $company->id) }}" method="POST"
-                                    onsubmit="return confirm('Hapus data ini?')" class="inline">
+                                    class="inline delete-company-form"
+                                    data-id="{{ $company->id }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" title="Hapus"
-                                        class="text-red-500 hover:text-red-600">
+                                    <button type="button" title="Hapus"
+                                        class="text-red-500 hover:text-red-600 delete-btn"
+                                        data-id="{{ $company->id }}">
                                         <i class="fa fa-trash text-lg"></i>
                                     </button>
                                 </form>
@@ -247,9 +246,8 @@ class="text-orange-500 hover:text-orange-600 edit-btn"
             </div>
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         // Fungsi untuk update warna dropdown status lowongan
         function updateStatusColor(sel) {
@@ -277,17 +275,6 @@ class="text-orange-500 hover:text-orange-600 edit-btn"
             // Inisialisasi warna dropdown
             initializeDropdownColors();
 
-            const table = document.querySelector('#companyTable');
-            if (!$.fn.DataTable.isDataTable(table)) {
-                new DataTable(table, {
-                    paging: false,
-                    ordering: false,
-                    searching: false,
-                    info: false,
-                    autoWidth: false,
-                    stripeClasses: [],
-                });
-            }
 
             const editModal = $('#editModal');
             const editForm = $('#editForm');
@@ -347,6 +334,81 @@ class="text-orange-500 hover:text-orange-600 edit-btn"
                     complete: function() {
                         dropdown.prop('disabled', false);
                         dropdown.removeClass('opacity-50');
+                    }
+                });
+            });
+
+            // Handler untuk tombol hapus dengan SweetAlert
+            $(document).on('click', '.delete-btn', function(e) {
+                e.preventDefault();
+                const companyId = $(this).data('id');
+                const form = $(`.delete-company-form[data-id="${companyId}"]`);
+                
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Hapus Data Perusahaan?',
+                    html: '⚠️ Pastikan Anda telah <b>mengarsipkan semua pelamar</b> dan <b>menghapus semua lowongan</b> yang terkait dengan perusahaan ini.<br><br>Data yang dihapus tidak dapat dipulihkan.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: form.attr('action'),
+                            method: 'POST',
+                            data: form.serialize(),
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil!',
+                                        text: response.message,
+                                        confirmButtonColor: '#10b981',
+                                        allowOutsideClick: false
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                }
+                            },
+                            error: function(xhr) {
+                                const response = xhr.responseJSON;
+                                let errorDetails = '';
+                                
+                                if (response.lowongans && response.lowongans.length > 0) {
+                                    errorDetails += `<p class="text-left mt-3"><b>📋 Lowongan yang masih aktif:</b></p>
+                                                   <ul class="text-left ml-4 mt-2">`;
+                                    response.lowongans.forEach(lowongan => {
+                                        errorDetails += `<li class="text-sm text-gray-700">• ${lowongan.nama_posisi}</li>`;
+                                    });
+                                    errorDetails += `</ul>`;
+                                }
+                                
+                                if (response.pelamars && response.pelamars.length > 0) {
+                                    errorDetails += `<p class="text-left mt-3"><b>👤 Pelamar yang masih terdaftar:</b></p>
+                                                   <ul class="text-left ml-4 mt-2">`;
+                                    response.pelamars.forEach(pelamar => {
+                                        errorDetails += `<li class="text-sm text-gray-700">• ${pelamar.nama_lengkap}</li>`;
+                                    });
+                                    errorDetails += `</ul>`;
+                                }
+                                
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Penghapusan Gagal!',
+                                    html: response.message + errorDetails,
+                                    confirmButtonText: 'Oke',
+                                    confirmButtonColor: '#ef4444',
+                                    allowOutsideClick: false,
+                                    didOpen: function() {
+                                        const popup = Swal.getPopup();
+                                        popup.style.maxWidth = '500px';
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             });

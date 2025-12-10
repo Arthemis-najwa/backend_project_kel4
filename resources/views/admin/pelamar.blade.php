@@ -1,9 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<h1 class="text-2xl font-semibold text-gray-800 mb-6">
-    {{ $title ?? 'Pelamar' }}
-</h1>
+
 
 <!-- CARD TABEL -->
 <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
@@ -118,8 +116,10 @@
 </td>
         <td class="px-6 py-4">
     <div class="flex justify-center items-center space-x-4 text-lg h-full"> 
+            <!-- Edit -->
             <button class="text-blue-600 hover:scale-110 transition edit-btn" title="Edit"
             data-id="{{ $a->id }}"
+
                                     data-nama="{{ $a->nama_lengkap }}"
                                     data-tanggal_lahir="{{ $a->tanggal_lahir }}"
                                     data-usia="{{ $a->usia }}"
@@ -139,26 +139,38 @@
                                     data-link_dokumen="{{ $file->link_dokumen }}">
                 <i class="fa fa-pen"></i> 
             </button> 
-            <button class="text-green-600 hover:scale-110 transition archive-btn" title="Arsipkan"
-            data-id="{{ $a->id }}"> 
-                <i class="fa fa-download"></i> 
-            </button> 
+
+            <!-- Arsip -->
+            <form action="{{ route('applicants.archive', $a->id) }}" method="POST" 
+                class="inline archive-applicant-form" data-id="{{ $a->id }}">
+                @csrf
+                <button type="button" title="Arsip"
+                    class="text-yellow-500 hover:text-yellow-600 archive-btn"
+                    data-id="{{ $a->id }}">
+                    <i class="fa fa-archive text-lg"></i>
+                </button>
+            </form>
+
+            <!-- Kirim -->
             <button class="text-yellow-500 hover:scale-110 transition kirim-btn" 
-    title="Kirim"
-    data-id="{{ $a->id }}">
-    <i class="fa fa-paper-plane"></i>
-</button> 
-           <form action="{{ route('applicants.destroy', $a->id) }}" method="POST"
-                                    onsubmit="return confirm('Hapus data ini?')" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" title="Hapus"
-                                        class="text-red-500 hover:text-red-600">
-                                        <i class="fa fa-trash text-lg"></i>
-                                    </button>
-            </form> 
-            </div>
-        </td>
+                title="Kirim"
+                data-id="{{ $a->id }}">
+                <i class="fa fa-paper-plane"></i>
+            </button> 
+
+            <!-- Hapus Permanen -->
+        <form action="{{ route('applicants.permanentDelete', $a->id) }}" method="POST" 
+            class="inline permanent-delete-form" data-id="{{ $a->id }}">
+            @csrf
+            @method('DELETE')
+            <button type="button" title="Hapus Permanen"
+                class="text-red-500 hover:text-red-600 permanent-delete-btn"
+                data-id="{{ $a->id }}">
+                <i class="fa fa-trash text-lg"></i>
+            </button>
+        </form>
+    </div>
+</td>
     </tr>
     @endforeach
 </tbody>
@@ -508,113 +520,206 @@
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    // Modal Tambah
-    const tambahModal = document.getElementById("tambahModal");
-    const openTambahBtn = document.getElementById("openTambahBtn");
-    const closeTambahBtn = document.getElementById("closeTambahBtn");
-    const closeTambahBtn2 = document.getElementById("closeTambahBtn2");
-    openTambahBtn.addEventListener("click", () => tambahModal.classList.remove("hidden"));
-    [closeTambahBtn, closeTambahBtn2].forEach(btn => btn.addEventListener("click", () => tambahModal.classList.add("hidden")));
+/* ===========================
+   MODAL TAMBAH
+=========================== */
+const tambahModal = document.getElementById("tambahModal");
+const openTambahBtn = document.getElementById("openTambahBtn");
+const closeTambahBtn = document.getElementById("closeTambahBtn");
+const closeTambahBtn2 = document.getElementById("closeTambahBtn2");
 
-    // Modal Edit
-    const editModal = $('#editModal');
-    const editForm = $('#editForm');
-    $(document).on('click', '.edit-btn', function () {
+openTambahBtn.addEventListener("click", () => tambahModal.classList.remove("hidden"));
+[closeTambahBtn, closeTambahBtn2].forEach(btn => 
+    btn.addEventListener("click", () => tambahModal.classList.add("hidden"))
+);
+
+/* ===========================
+   MODAL EDIT
+=========================== */
+$(document).on('click', '.edit-btn', function () {
     const id = $(this).data('id');
-    $('#editNamaLengkap').val($(this).data('nama'));
-    $('#editTanggalLahir').val($(this).data('tanggal_lahir'));
-    $('#editUsia').val($(this).data('usia'));
-    $('#editJenisKelamin').val($(this).data('jenis_kelamin'));
-    $('#editStatusPernikahan').val($(this).data('status_pernikahan'));
-    $('#editAlamat').val($(this).data('alamat'));
-    $('#editNoTelepon').val($(this).data('no_telp'));
-    $('#editEmail').val($(this).data('email'));
-    $('#editPendidikanTerakhir').val($(this).data('pendidikan_terakhir'));
-    $('#editJurusan').val($(this).data('jurusan'));
-    $('#editTahunLulus').val($(this).data('tahun_lulus'));
-    $('#editPengalamanKerja').val($(this).data('pengalaman_kerja'));
-    $('#editSkillTeknis').val($(this).data('skill_teknis'));
-    $('#editSkillNonTeknis').val($(this).data('skill_non_teknis'));
-    $('#editVaksin').val($(this).data('status_vaksinasi'));
-    $('#editPerusahaanTujuan').val($(this).data('perusahaan_tujuan'));
-    $('#editLinkDokumen').val($(this).data('link_dokumen'));
 
-    // perbaikan action
-    $('#editForm').attr('action', `/applicants/${id}`);
+    $("#editNamaLengkap").val($(this).data('nama'));
+    $("#editTanggalLahir").val($(this).data('tanggal_lahir'));
+    $("#editUsia").val($(this).data('usia'));
+    $("#editJenisKelamin").val($(this).data('jenis_kelamin'));
+    $("#editStatusPernikahan").val($(this).data('status_pernikahan'));
+    $("#editAlamat").val($(this).data('alamat'));
+    $("#editNoTelepon").val($(this).data('no_telp'));
+    $("#editEmail").val($(this).data('email'));
+    $("#editPendidikanTerakhir").val($(this).data('pendidikan_terakhir'));
+    $("#editJurusan").val($(this).data('jurusan'));
+    $("#editTahunLulus").val($(this).data('tahun_lulus'));
+    $("#editPengalamanKerja").val($(this).data('pengalaman_kerja'));
+    $("#editSkillTeknis").val($(this).data('skill_teknis'));
+    $("#editSkillNonTeknis").val($(this).data('skill_non_teknis'));
+    $("#editVaksin").val($(this).data('status_vaksinasi'));
+    $("#editPerusahaanTujuan").val($(this).data('perusahaan_tujuan'));
+    $("#editLinkDokumen").val($(this).data('link_dokumen'));
 
-    // tampilkan modal
-    $('#editModal').removeClass('hidden');
+    $("#editForm").attr("action", `/applicants/${id}`);
+    $("#editModal").removeClass("hidden");
 });
 
 function closeEditModal() {
-    $('#editModal').addClass('hidden');
+    $("#editModal").addClass("hidden");
 }
 
+/* ===========================
+   STYLE DROPDOWN COLORS
+=========================== */
+function updateVaksinColor(sel){
+    const colors = {
+        "Lengkap": "#0EDA52",
+        "Belum Lengkap": "#FACC15",
+        "Belum Vaksin": "#EF4444",
+    };
+    sel.style.backgroundColor = colors[sel.value] || "";
+    sel.style.color = "white";
+}
 
-    // Dropdown warna
-    function updateVaksinColor(sel){
-        switch(sel.value){
-            case 'Lengkap': sel.style.backgroundColor='#0EDA52'; break;
-            case 'Belum Lengkap': sel.style.backgroundColor='#FACC15'; break;
-            case 'Belum Vaksin': sel.style.backgroundColor='#EF4444'; break;
-        }
-        sel.style.color='white';
-    }
-    document.querySelectorAll('.status-vaksinasi').forEach(sel=>{
-        updateVaksinColor(sel);
-        sel.addEventListener('change',()=>updateVaksinColor(sel));
+document.querySelectorAll('.status-vaksinasi').forEach(sel=>{
+    updateVaksinColor(sel);
+    sel.addEventListener('change',()=>updateVaksinColor(sel));
+});
+
+function updateStatusColor(sel){
+    const colors = {
+        "Waiting List": "#FACC15",
+        "Medical Check Up": "#3B82F6",
+        "Pelatihan": "#FB923C",
+        "Interview": "#8B5CF6",
+        "Diterima": "#22C55E",
+        "Ditolak": "#EF4444",
+    };
+    sel.style.backgroundColor = colors[sel.value] || "";
+    sel.style.color = "white";
+}
+
+document.querySelectorAll('.status-proses').forEach(sel=>{
+    updateStatusColor(sel);
+    sel.addEventListener('change',()=>updateStatusColor(sel));
+});
+
+/* ===========================
+   ARCHIVE (SweetAlert Only)
+=========================== */
+$(document).on('click', '.archive-btn', function(e) {
+    e.preventDefault();
+
+    const id = $(this).data('id');
+    const form = $(`.archive-applicant-form[data-id="${id}"]`);
+
+    Swal.fire({
+        icon: 'question',
+        title: 'Arsipkan Pelamar?',
+        text: 'Pelamar dapat dipulihkan dari menu arsip.',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Arsipkan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#f59e0b',
+        cancelButtonColor: '#6b7280',
+    }).then(r => {
+        if (!r.isConfirmed) return;
+
+        $.post(form.attr('action'), form.serialize())
+            .done(res => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: res.message,
+                }).then(() => location.reload());
+            })
+            .fail(xhr => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: xhr.responseJSON?.message || 'Terjadi kesalahan.',
+                });
+            });
     });
+});
 
-    function updateStatusColor(sel){
-        switch(sel.value){
-            case 'Waiting List': sel.style.backgroundColor='#FACC15'; break;
-            case 'Medical Check Up': sel.style.backgroundColor='#3B82F6'; break;
-            case 'Pelatihan': sel.style.backgroundColor='#FB923C'; break;
-            case 'Interview': sel.style.backgroundColor='#8B5CF6'; break;
-            case 'Diterima': sel.style.backgroundColor='#22C55E'; break;
-            case 'Ditolak': sel.style.backgroundColor='#EF4444'; break;
-        }
-        sel.style.color='white';
-    }
-    document.querySelectorAll('.status-proses').forEach(sel=>{
-        updateStatusColor(sel);
-        sel.addEventListener('change',()=>updateStatusColor(sel));
+/* ===========================
+   RESTORE (SweetAlert)
+=========================== */
+$(document).on('click', '.restore-btn', function(e) {
+    e.preventDefault();
+
+    const id = $(this).data('id');
+    const form = $(`.restore-applicant-form[data-id="${id}"]`);
+
+    Swal.fire({
+        icon: 'question',
+        title: 'Pulihkan Pelamar?',
+        text: 'Pelamar akan kembali ke daftar aktif.',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Pulihkan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#10b981'
+    }).then(r => {
+        if (!r.isConfirmed) return;
+
+        $.post(form.attr('action'), form.serialize())
+            .done(res => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: res.message,
+                }).then(() => location.reload());
+            })
+            .fail(xhr => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: xhr.responseJSON?.message || 'Terjadi kesalahan.',
+                });
+            });
     });
-    $(document).on('click', '.archive-btn', function () {
-    const applicantId = $(this).data('id');
+});
 
-    if (confirm('Apakah kamu yakin ingin mengarsipkan pelamar ini?')) {
+/* ===========================
+   PERMANENT DELETE (SweetAlert)
+=========================== */
+$(document).on('click', '.permanent-delete-btn', function(e) {
+    e.preventDefault();
+
+    const id = $(this).data('id');
+    const form = $(`.permanent-delete-form[data-id="${id}"]`);
+
+    Swal.fire({
+        icon: 'warning',
+        title: 'Hapus Permanen?',
+        html: '<b class="text-red-600">⚠️ Data ini tidak bisa dipulihkan!</b>',
+        showCancelButton: true,
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#ef4444',
+    }).then(r => {
+        if (!r.isConfirmed) return;
+
         $.ajax({
-            url: `/applicants/${applicantId}/archive`,
-            method: 'POST',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
+            url: form.attr('action'),
+            method: 'DELETE',
+            data: form.serialize(),
+            success(res) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: res.message,
+                }).then(() => location.reload());
             },
-            success: function (response) {
-                alert(response.message);
-                location.reload(); 
-            },
-            error: function (xhr) {
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    alert(xhr.responseJSON.message);
-                } else {
-                    alert('Terjadi kesalahan saat mengarsipkan.');
-                }
+            error(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: xhr.responseJSON?.message || 'Terjadi kesalahan.',
+                });
             }
         });
-    }
-});
-$(document).on('click', '.kirim-btn', function () {
-    const id = $(this).data('id');
-
-    if (!confirm("Kirim pelamar ini untuk diexport?")) return;
-
-    $.post(`/applicants/${id}/kirim`, {
-        _token: '{{ csrf_token() }}'
-    }, function () {
-        alert('Pelamar berhasil ditandai untuk diexport!');
-        location.reload();
     });
 });
 </script>

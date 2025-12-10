@@ -22,13 +22,18 @@ class AuthController extends Controller
     {
         $request->validate([
             'username' => 'required',
+            'username' => 'required|string|exists:admins,username',
             'password' => 'required',
         ], [
             'username.required' => 'Username wajib diisi.',
+            'username.exists' => 'Username tidak ditemukan.',
             'password.required' => 'Password wajib diisi.',
         ]);
 
         $admin = Admin::where('username', $request->username)->first();
+        $username = trim($request->username);
+
+        $admin = Admin::where('username', $username)->first();
 
         if (!$admin) {
             return back()->withErrors(['username' => 'Username tidak ditemukan.'])->withInput();

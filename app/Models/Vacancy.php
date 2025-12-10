@@ -17,12 +17,14 @@ class Vacancy extends Model
 
     public function company()
 {
-    return $this->belongsTo(Company::class, 'company_id');
+    return $this->belongsTo(Company::class);
 }
-    public function qualification()
+
+public function qualification()
 {
     return $this->hasOne(Qualification::class);
 }
+
 public function applicants()
 {
     return $this->hasMany(Applicant::class);

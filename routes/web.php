@@ -12,6 +12,7 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\DashboardController;
 
 require __DIR__ . '/auth.php';
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
 // Halaman utama & dashboard
 Route::get("/", [PageController::class, "direct_dashboard"]);
@@ -44,6 +45,7 @@ Route::get('/password/reset-form', [AuthController::class, 'showResetForm'])->na
 Route::post('/password/reset-store', [AuthController::class, 'resetPassword'])->name('password.reset.store');
 
 // Company CRUD
+Route::get('/perusahaan/data', [CompanyController::class, 'data'])->name('perusahaan.data');
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
 Route::post('/companies/store', [CompanyController::class, 'store'])->name('companies.store');
 Route::delete('/companies/{id}', [CompanyController::class, 'destroy'])->name('companies.destroy');
@@ -69,6 +71,8 @@ Route::put('/applicants/{id}', [ApplicantController::class, 'update'])->name('ap
 Route::delete('/applicants/{id}', [ApplicantController::class, 'destroy'])->name('applicants.destroy');
 Route::post('/applicants/update-status/{id}', [ApplicantController::class, 'updateStatus'])->name('applicants.updateStatus');
 Route::post('/applicants/{id}/archive', [ApplicantController::class, 'archive'])->name('applicants.archive');
+Route::post('/applicants/{id}/restore', [ApplicantController::class, 'restore'])->name('applicants.restore');
+Route::delete('/applicants/{id}/permanent-delete', [ApplicantController::class, 'permanentDelete'])->name('applicants.permanentDelete');
 
 // Archive CRUD
 Route::get('/arsip-data-pelamar', [ArchiveController::class, 'index'])->name('arsip-data-pelamar');

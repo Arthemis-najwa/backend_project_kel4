@@ -55,12 +55,55 @@ DB::commit();
     }
 }
 
-    public function destroy($id)
-    {
-        $vacancies = Vacancy::findOrFail($id);
-        $vacancies->delete();
-        return redirect()->route('lowongan-pekerjaan')->with('success', 'Data perusahaan berhasil dihapus!');
+   public function destroy($id)
+{
+    try {
+        $vacancy = Vacancy::findOrFail($id);
+
+        // Cek apakah ada applicant_recommendations yang terkait dengan lowongan ini
+        // dan pelamarnya BELUM diarsipkan (deleted_at = NULL)
+        $applicantRecommendations = \DB::table('applicant_recommendations')
+            ->where('vacancy_id', $id)
+            ->join('applicants', 'applicant_recommendations.applicant_id', '=', 'applicants.id')
+            ->whereNull('applicants.deleted_at')  // Hanya ambil pelamar yang belum diarsipkan
+            ->select('applicants.id', 'applicants.nama_lengkap')
+            ->distinct()
+            ->get();
+        
+        if ($applicantRecommendations->count() > 0) {
+            $applicantList = $applicantRecommendations->map(function($a) {
+                return ['nama_lengkap' => $a->nama_lengkap];
+            })->toArray();
+            
+            return response()->json([
+                'success' => false,
+                'message' => '❌ Anda harus mengarsipkan seluruh pelamar terlebih dahulu sebelum menghapus lowongan',
+                'applicant_count' => $applicantRecommendations->count(),
+                'applicants' => $applicantList
+            ], 422);
+        }
+
+        // Hapus applicant_recommendations terlebih dahulu
+        \DB::table('applicant_recommendations')->where('vacancy_id', $id)->delete();
+
+        // Hapus qualification terlebih dahulu
+        $vacancy->qualification()->delete();
+
+        // Hapus lowongan
+        $vacancy->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lowongan berhasil dihapus.'
+        ], 200);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+        ], 500);
     }
+}
 
    public function update(Request $request, $id)
 {

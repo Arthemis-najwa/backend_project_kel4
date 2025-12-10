@@ -1,14 +1,11 @@
 @extends('layouts.admin')
 
 @section('content')
-<h1 class="text-2xl font-semibold text-gray-800 mb-6">
-    {{ $title ?? 'Arsip Data Pelamar' }}
-</h1>
 
 <!-- Tabel Pelamar -->
 <div class="bg-white rounded-xl shadow-md p-6 mt-10 border border-gray-200">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-semibold text-gray-800">Daftar Pelamar</h2>
+        <h2 class="text-xl font-semibold text-gray-800">Daftar Arsip Data Pelamar</h2>
     </div>
 
     <div class="relative overflow-x-auto rounded-xl">
@@ -43,18 +40,34 @@
     <td class="px-6 py-3">{{ $archive->applicant->status_vaksinasi ?? '-' }}</td>
     <td class="px-6 py-3" style="min-width: 260px;">{{ $archive->applicant->perusahaan_tujuan ?? '-' }}</td>
     <td class="px-6 py-4">
-    <div class="flex justify-center items-center space-x-4 text-lg h-full"> 
-                        <button class="text-green-600 hover:scale-110 transition restore-btn" title="Restore" data-id="{{ $archive->applicant_id }}">
-                            <i class="fa fa-rotate-left"></i>
-                        </button>
-                        <button class="text-red-500 hover:scale-110 transition delete-btn" title="Hapus" data-id="{{ $archive->applicant_id }}">
-                            <i class="fa fa-trash"></i>
-                        </button>
-    </div>
+        <div class="flex justify-center items-center space-x-4 text-lg h-full">
+            <!-- Restore -->
+            <form action="{{ route('applicants.restore', $archive->applicant->id) }}" method="POST" 
+                class="inline restore-applicant-form" data-id="{{ $archive->applicant->id }}">
+                @csrf
+                <button type="button" title="Pulihkan"
+                    class="text-green-500 hover:text-green-600 restore-btn"
+                    data-id="{{ $archive->applicant->id }}">
+                    <i class="fa fa-undo text-lg"></i>
+                </button>
+            </form>
+
+            <!-- Hapus Permanen -->
+            <form action="{{ route('applicants.permanentDelete', $archive->applicant->id) }}" method="POST" 
+                class="inline permanent-delete-form" data-id="{{ $archive->applicant->id }}">
+                @csrf
+                @method('DELETE')
+                <button type="button" title="Hapus Permanen"
+                    class="text-red-500 hover:text-red-600 permanent-delete-btn"
+                    data-id="{{ $archive->applicant->id }}">
+                    <i class="fa fa-trash text-lg"></i>
+                </button>
+            </form>
+        </div>
     </td>
 </tr>
 @endforeach
-</tbody>
+            </tbody>
 
 
         </table>
@@ -66,41 +79,98 @@
     $inputClasses = "w-full border rounded px-2 py-1 text-sm";
 @endphp
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-$(document).on('click', '.restore-btn', function() {
-    const id = $(this).data('id');
-    if (!confirm('Pulihkan pelamar ini ke daftar utama?')) return;
-
-    $.ajax({
-        url: `/archives/${id}/restore`,
-        method: 'POST',
-        data: {_token: '{{ csrf_token() }}'},
-        success(res) {
-            alert(res.message || 'Data berhasil dipulihkan!');
-            location.reload();
-        },
-        error(xhr) {
-            const msg = xhr.responseJSON?.message || 'Gagal memulihkan data.';
-            alert(msg);
+// Handler untuk restore
+$(document).on('click', '.restore-btn', function(e) {
+    e.preventDefault();
+    const applicantId = $(this).data('id');
+    const form = $(`.restore-applicant-form[data-id="${applicantId}"]`);
+    
+    Swal.fire({
+        icon: 'question',
+        title: 'Pulihkan Pelamar?',
+        text: 'Pelamar akan kembali ke status aktif.',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Pulihkan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#6b7280',
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: form.attr('action'),
+                method: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: response.message,
+                        confirmButtonColor: '#10b981',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    const response = xhr.responseJSON;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: response.message,
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            });
         }
     });
 });
 
-$(document).on('click', '.delete-btn', function() {
-    const id = $(this).data('id');
-    if (!confirm('Hapus arsip ini secara permanen?')) return;
-
-    $.ajax({
-        url: `/archives/${id}/hapus`,
-        method: 'DELETE',
-        data: {_token: '{{ csrf_token() }}'},
-        success(res) {
-            alert(res.message || 'Data berhasil dihapus permanen!');
-            location.reload();
-        },
-        error(xhr) {
-            const msg = xhr.responseJSON?.message || 'Gagal menghapus data.';
-            alert(msg);
+// Handler untuk hapus permanen
+$(document).on('click', '.permanent-delete-btn', function(e) {
+    e.preventDefault();
+    const applicantId = $(this).data('id');
+    const form = $(`.permanent-delete-form[data-id="${applicantId}"]`);
+    
+    Swal.fire({
+        icon: 'warning',
+        title: 'Hapus Permanen?',
+        html: '<span class="text-red-600"><b>⚠️ Data tidak dapat dipulihkan!</b></span>',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus Permanen',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: form.attr('action'),
+                method: 'DELETE',
+                data: form.serialize(),
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: response.message,
+                        confirmButtonColor: '#10b981',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    const response = xhr.responseJSON;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: response.message,
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            });
         }
     });
 });
