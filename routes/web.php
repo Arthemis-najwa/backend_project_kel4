@@ -12,11 +12,10 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\DashboardController;
 
 require __DIR__ . '/auth.php';
+Route::get('/', function () {
+    return redirect('/login');
+});
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-
-// Halaman utama & dashboard
-Route::get("/", [PageController::class, "direct_dashboard"]);
-Route::get("/dashboard", [PageController::class, "dashboard"])->name("dashboard");
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
