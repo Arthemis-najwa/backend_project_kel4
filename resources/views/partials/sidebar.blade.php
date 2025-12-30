@@ -4,13 +4,11 @@
         <img class="size-12" src="/imgs/logo.png" alt="">
         <span class="text-orange-400 text-2xl poppins-semibold">CIPTA KARIR</span>
     </div>
-
     <div class="mt-5">
         <a href="{{ route('dashboard') }}"
             class="{{ request()->is('dashboard') ? 'bg-gray-50 text-orange-400' : 'text-blue-600 hover:bg-blue-50 hover:text-blue-800' }} ms-4 ps-6 p-5 rounded-tl-full rounded-bl-full flex gap-3 items-center mb-5 relative transition-all duration-200 group">
             <i class="fa-regular fa-house w-[20px] group-hover:scale-110 transition-transform"></i>
             <span class="poppins-medium">Dashboard</span>
-
             @php
                 $isActive = request()->is('dashboard');
             @endphp
